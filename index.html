@@ -29,30 +29,11 @@
         #reader video { object-fit: cover; border-radius: 1rem; }
         .page { display: none; padding-bottom: 80px; }
         .page.active { display: block; }
-        
-        /* Zoom Modal Styles */
-        .zoom-container { overflow: auto; touch-action: none; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-        .zoom-image { transition: transform 0.1s ease-out; transform-origin: center center; max-width: 90%; max-height: 90%; object-fit: contain; cursor: grab; }
-        .zoom-image:active { cursor: grabbing; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-cyber-900 dark:text-white min-h-screen transition-colors duration-300">
 
-    <div id="zoom-modal" class="fixed inset-0 z-[100] bg-black/95 hidden flex-col">
-        <div class="absolute top-0 w-full p-4 flex justify-between items-center z-10">
-            <h3 class="text-white font-bold text-sm">Preview Foto</h3>
-            <button onclick="window.closeZoom()" class="p-2 bg-white/20 rounded-full text-white hover:bg-white/30"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-        </div>
-        <div class="zoom-container" id="zoom-container">
-            <img id="zoom-img" class="zoom-image" src="">
-        </div>
-        <div class="absolute bottom-10 w-full flex justify-center gap-4 z-10">
-            <button onclick="window.zoomIn()" class="p-3 bg-white/20 backdrop-blur rounded-full text-white hover:bg-white/30"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
-            <button onclick="window.resetZoom()" class="px-4 bg-white/20 backdrop-blur rounded-full text-white text-xs font-bold hover:bg-white/30">Reset</button>
-            <button onclick="window.zoomOut()" class="p-3 bg-white/20 backdrop-blur rounded-full text-white hover:bg-white/30"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
-        </div>
-    </div>
-
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" class="fixed inset-0 z-50 bg-white dark:bg-cyber-900 flex flex-col items-center justify-center p-6">
         <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center shadow-sm mb-6">
             <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg text-white">
@@ -69,7 +50,9 @@
         <p id="login-error" class="mt-4 text-red-500 text-sm hidden bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded-lg border border-red-100 dark:border-red-800">NIS tidak ditemukan</p>
     </div>
 
+    <!-- MAIN APP -->
     <div id="main-app" class="hidden">
+        <!-- Header -->
         <header class="px-6 pt-8 pb-4 bg-white dark:bg-cyber-800 shadow-sm sticky top-0 z-30 border-b border-gray-100 dark:border-emerald-900">
             <div class="flex justify-between items-center">
                 <div>
@@ -81,6 +64,7 @@
             </div>
         </header>
 
+        <!-- PAGE: HOME -->
         <div id="page-home" class="page active px-6 py-4 space-y-6">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
                 <div class="relative z-10">
@@ -109,6 +93,7 @@
             </div>
         </div>
 
+        <!-- PAGE: PERMISSION -->
         <div id="page-permission" class="page px-6 py-4">
             <div class="flex items-center gap-3 mb-6">
                 <button onclick="window.switchPage('home')" class="p-2 bg-white dark:bg-cyber-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-cyber-700">
@@ -146,11 +131,8 @@
                             <p class="text-xs text-gray-500">Klik untuk ambil foto</p>
                         </div>
                         <input type="file" id="perm-file" class="hidden" accept="image/*" capture="environment">
-                        <div id="preview-wrapper" class="absolute inset-0 hidden group hover:opacity-100">
+                        <div id="preview-wrapper" class="absolute inset-0 hidden">
                             <img id="perm-preview" class="w-full h-full object-cover opacity-100">
-                            <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onclick="window.viewZoom(event)">
-                                <span class="bg-white/20 backdrop-blur text-white text-xs px-2 py-1 rounded">🔍 Zoom</span>
-                            </div>
                         </div>
                     </label>
                 </div>
@@ -160,6 +142,7 @@
             </div>
         </div>
 
+        <!-- PAGE: PROFILE -->
         <div id="page-profile" class="page px-6 py-4 text-center">
             <img src="" id="profile-avatar-lg" class="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 object-cover ring-4 ring-white dark:ring-cyber-800 shadow-lg">
             <h2 id="profile-name" class="text-xl font-bold text-gray-900 dark:text-white">Nama Siswa</h2>
@@ -170,6 +153,7 @@
             </button>
         </div>
 
+        <!-- Bottom Nav -->
         <div class="fixed bottom-0 w-full bg-white dark:bg-cyber-800 border-t border-gray-200 dark:border-emerald-900 flex justify-around py-3 pb-5 z-40">
             <button onclick="window.switchPage('home')" class="nav-item active flex flex-col items-center gap-1 w-full group">
                 <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
@@ -182,6 +166,7 @@
         </div>
     </div>
 
+    <!-- SCANNER MODAL -->
     <div id="scanner-modal" class="fixed inset-0 z-[60] bg-black hidden flex-col">
         <div class="p-4 flex justify-between items-center text-white absolute top-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
             <h3 class="font-bold">Scan QR Guru</h3>
@@ -212,8 +197,6 @@
 
         let db, auth, html5QrCode;
         let currentUserData = null;
-        let currentScale = 1;
-        let startX, startY, translateX=0, translateY=0;
 
         document.addEventListener('DOMContentLoaded', async () => {
             const app = initializeApp(firebaseConfig);
@@ -229,8 +212,7 @@
                 if(file) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        const preview = document.getElementById('perm-preview');
-                        preview.src = e.target.result;
+                        document.getElementById('perm-preview').src = e.target.result;
                         document.getElementById('preview-wrapper').classList.remove('hidden');
                     };
                     reader.readAsDataURL(file);
@@ -238,66 +220,7 @@
             });
         });
 
-        // --- ZOOM LOGIC ---
-        window.viewZoom = (e) => {
-            e.preventDefault(); e.stopPropagation();
-            const src = document.getElementById('perm-preview').src;
-            if(!src) return;
-            const img = document.getElementById('zoom-img');
-            img.src = src;
-            currentScale = 1; translateX=0; translateY=0;
-            updateTransform();
-            document.getElementById('zoom-modal').classList.remove('hidden');
-            document.getElementById('zoom-modal').classList.add('flex');
-        };
-        window.closeZoom = () => {
-            document.getElementById('zoom-modal').classList.add('hidden');
-            document.getElementById('zoom-modal').classList.remove('flex');
-        };
-        window.zoomIn = () => { if(currentScale < 5) currentScale += 0.5; updateTransform(); };
-        window.zoomOut = () => { if(currentScale > 0.5) currentScale -= 0.5; updateTransform(); };
-        window.resetZoom = () => { currentScale = 1; translateX=0; translateY=0; updateTransform(); };
-        
-        function updateTransform() {
-            document.getElementById('zoom-img').style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentScale})`;
-        }
-
-        // --- Pan Logic ---
-        const zoomImg = document.getElementById('zoom-img');
-        let isDragging = false;
-        
-        zoomImg.addEventListener('touchstart', e => {
-            if(e.touches.length === 1 && currentScale > 1) {
-                isDragging = true;
-                startX = e.touches[0].clientX - translateX;
-                startY = e.touches[0].clientY - translateY;
-            }
-        });
-        zoomImg.addEventListener('touchmove', e => {
-            if(isDragging) {
-                e.preventDefault();
-                translateX = e.touches[0].clientX - startX;
-                translateY = e.touches[0].clientY - startY;
-                updateTransform();
-            }
-        });
-        zoomImg.addEventListener('touchend', () => { isDragging = false; });
-        
-        // Mouse Events
-        zoomImg.addEventListener('mousedown', e => {
-            if(currentScale > 1) {
-                isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY;
-            }
-        });
-        window.addEventListener('mousemove', e => {
-            if(isDragging) {
-                e.preventDefault(); translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform();
-            }
-        });
-        window.addEventListener('mouseup', () => { isDragging = false; });
-
-
-        // --- LOGIN LOGIC ---
+        // --- NEW SMART LOGIN LOGIC ---
         window.doLogin = () => {
             const nis = document.getElementById('login-nis').value.trim();
             if(nis) attemptLogin(nis);
@@ -311,19 +234,26 @@
             document.getElementById('login-error').classList.add('hidden');
             
             try {
+                // 1. Cek apa adanya (Raw)
                 let docSnap = await getDoc(doc(db, 'siswa', rawNis));
+                
+                // 2. Jika gagal, coba format otomatis (tambah titik)
                 if (!docSnap.exists()) {
+                    // Hapus semua karakter non-angka
                     const clean = rawNis.replace(/[^0-9]/g, '');
+                    // Jika panjang 9 angka (Format: 4.2.3), coba format jadi 2425.10.111
                     if (clean.length === 9) {
                         const formatted = `${clean.substring(0,4)}.${clean.substring(4,6)}.${clean.substring(6)}`;
                         docSnap = await getDoc(doc(db, 'siswa', formatted));
-                        if(docSnap.exists()) rawNis = formatted;
+                        if(docSnap.exists()) {
+                            rawNis = formatted; // Update nis yg dipakai login
+                        }
                     }
                 }
 
                 if (docSnap.exists()) {
                     currentUserData = { id: docSnap.id, ...docSnap.data() };
-                    localStorage.setItem('student_nis', docSnap.id);
+                    localStorage.setItem('student_nis', docSnap.id); // Simpan ID yg benar (dgn titik)
                     initAppUI();
                 } else {
                     document.getElementById('login-error').classList.remove('hidden');
@@ -415,7 +345,13 @@
 
                 const docRef = doc(db, 'presensi', docId);
                 const updateData = {};
-                updateData[currentUserData.id] = { status: type, time: time, method: 'izin_app', buktiAda: true };
+                // TAMBAHAN: Tandai bahwa ada bukti foto
+                updateData[currentUserData.id] = { 
+                    status: type, 
+                    time: time, 
+                    method: 'izin_app',
+                    buktiAda: true // <--- Flag ini penting untuk aplikasi guru
+                };
                 await setDoc(docRef, updateData, { merge: true });
 
                 alert("Permohonan berhasil dikirim.");
@@ -442,14 +378,25 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         const ctx = canvas.getContext('2d');
-                        const maxWidth = 800; // Increased Quality
-                        const scale = maxWidth / img.width;
-                        canvas.width = maxWidth;
-                        canvas.height = img.height * scale;
+                        // Kompresi lebih kuat (Width max 600, Quality 0.6) agar size < 100KB
+                        const maxWidth = 600; 
+                        let width = img.width; 
+                        let height = img.height;
+                        
+                        if(width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                        
+                        canvas.width = Math.floor(width);
+                        canvas.height = Math.floor(height);
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.8));
+                        
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
                     };
+                    img.onerror = () => resolve("");
                 };
+                reader.onerror = () => resolve("");
                 reader.readAsDataURL(file);
             });
         }
