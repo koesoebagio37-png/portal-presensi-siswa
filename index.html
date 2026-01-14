@@ -21,7 +21,7 @@
             }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .nav-item.active { color: #059669; } 
@@ -44,7 +44,6 @@
         <h1 class="text-2xl font-bold mb-1 text-gray-800 dark:text-emerald-50">Presensi Siswa</h1>
         <p class="text-gray-500 dark:text-gray-400 text-sm mb-8">Masukkan NIS untuk memulai</p>
         
-        <!-- Input Type Text agar keyboard lebih fleksibel, inputmode numeric untuk memunculkan angka -->
         <input type="text" inputmode="numeric" id="login-nis" class="w-full max-w-xs p-4 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none dark:bg-cyber-800 dark:border-emerald-800 dark:text-white transition-all" placeholder="Nomor Induk Siswa">
         
         <button onclick="window.doLogin()" class="mt-6 w-full max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
@@ -60,7 +59,7 @@
         <header class="px-6 pt-8 pb-4 bg-white dark:bg-cyber-800 shadow-sm sticky top-0 z-30 border-b border-gray-100 dark:border-emerald-900">
             <div class="flex justify-between items-center">
                 <div>
-                    <p class="text-xs text-gray-500 dark:text-emerald-400/80">Halo, selamat pagi</p>
+                    <p id="header-date" class="text-xs text-gray-500 dark:text-emerald-400/80">Halo, selamat pagi</p>
                     <h2 id="user-name" class="text-xl font-bold text-gray-900 dark:text-white">Nama Siswa</h2>
                     <span id="user-class" class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800">Kelas -</span>
                 </div>
@@ -81,31 +80,62 @@
                 </div>
             </div>
 
+            <!-- MENU GRID (Updated: Scan, Token Manual, Izin) -->
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="window.openScanner()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-emerald-200 dark:hover:border-emerald-700 group">
+                <!-- Tombol Scan -->
+                <button id="btn-scan-main" onclick="window.openScanner()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-emerald-200 dark:hover:border-emerald-700 group">
                     <div class="w-12 h-12 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h4.01M16 3h5v5h-5V3zm0 13h5v5h-5v-5zm-9 4h10v2h-10v-2zm-6-6h10v2h-10v-2z"></path></svg>
                     </div>
                     <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Scan Masuk</span>
                 </button>
-                <button onclick="window.switchPage('permission')" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-blue-200 dark:hover:border-blue-700 group">
-                    <div class="w-12 h-12 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+
+                <!-- Tombol Manual Token (Menggantikan Text Link) -->
+                <button id="btn-token-manual" onclick="window.openManualInput()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-purple-200 dark:hover:border-purple-700 group">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                     </div>
-                    <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Izin / Sakit</span>
+                    <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Input Token</span>
+                </button>
+
+                <!-- Tombol Izin -->
+                <button onclick="window.switchPage('permission')" class="col-span-2 bg-white dark:bg-cyber-800 p-5 rounded-2xl shadow-sm flex items-center justify-between px-6 gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-blue-200 dark:hover:border-blue-700 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div class="text-left">
+                            <span class="block font-bold text-sm text-gray-700 dark:text-gray-200">Izin / Sakit</span>
+                            <span class="text-xs text-gray-400">Kirim surat keterangan</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </button>
             </div>
+
         </div>
 
         <!-- PAGE: PERMISSION -->
         <div id="page-permission" class="page px-6 py-4">
-            <div class="flex items-center gap-3 mb-6">
-                <button onclick="window.switchPage('home')" class="p-2 bg-white dark:bg-cyber-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-cyber-700">
-                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            <!-- HEADER PERMISSION (Updated) -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <button onclick="window.switchPage('home')" class="p-2 bg-white dark:bg-cyber-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-cyber-700 border border-gray-100 dark:border-emerald-900">
+                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 dark:text-white leading-tight">Formulir Izin</h2>
+                        <p class="text-xs text-gray-500">Isi data dengan benar</p>
+                    </div>
+                </div>
+                <!-- Tombol Kirim Pindah ke Sini -->
+                <button onclick="window.submitPermission()" id="btn-perm-top" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 flex items-center gap-2">
+                    <span>Kirim</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
-                <h2 class="text-xl font-bold text-gray-800 dark:text-white">Formulir Ketidakhadiran</h2>
             </div>
-            <div class="space-y-5 bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-emerald-900">
+
+             <div class="space-y-5 bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-emerald-900">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Keterangan</label>
                     <div class="grid grid-cols-2 gap-4">
@@ -125,7 +155,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alasan Lengkap</label>
-                    <textarea id="perm-reason" rows="3" class="w-full p-3 bg-gray-50 dark:bg-cyber-900 border border-gray-200 dark:border-emerald-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white" placeholder="Contoh: Demam tinggi sejak semalam..."></textarea>
+                    <textarea id="perm-reason" rows="4" class="w-full p-4 bg-gray-50 dark:bg-cyber-900 border border-gray-200 dark:border-emerald-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white" placeholder="Contoh: Demam tinggi sejak semalam..."></textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bukti Foto (Surat)</label>
@@ -138,9 +168,6 @@
                         <img id="perm-preview" class="absolute inset-0 w-full h-full object-cover opacity-50 hidden">
                     </label>
                 </div>
-                <button onclick="window.submitPermission()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
-                    <span id="btn-perm-text">Kirim Permohonan</span>
-                </button>
             </div>
         </div>
 
@@ -175,18 +202,33 @@
             <button onclick="window.closeScanner()" class="p-2 bg-white/20 rounded-full backdrop-blur hover:bg-white/30 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
         </div>
         <div id="reader" class="w-full h-full bg-black relative">
-            <div class="absolute inset-0 border-2 border-emerald-500 opacity-50 pointer-events-none m-10 rounded-xl"></div>
+            <!-- Scan region marker -->
+            <div class="absolute inset-0 border-2 border-emerald-500 opacity-50 pointer-events-none m-12 rounded-xl"></div>
         </div>
         <div class="absolute bottom-10 w-full text-center text-white/80 px-6">
-            <p class="text-sm mb-4">Arahkan kamera ke QR Code di layar proyektor</p>
+            <p class="text-sm mb-4">Arahkan kamera ke QR Code di layar</p>
             <p id="scan-status" class="text-xs font-mono bg-black/50 py-1 px-3 rounded-full inline-block backdrop-blur">Kamera Aktif</p>
+        </div>
+    </div>
+
+    <!-- MANUAL TOKEN MODAL (NEW) -->
+    <div id="token-modal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-6 shadow-2xl relative animate-fade-in-up">
+            <button onclick="closeManualInput()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl text-indigo-600">⌨️</div>
+                <h3 class="font-bold text-gray-800 dark:text-white">Input Token</h3>
+                <p class="text-xs text-gray-500">Masukkan 4 digit kode dari guru</p>
+            </div>
+            <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
+            <button onclick="submitManualToken()" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Verifikasi</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, setDoc, onSnapshot, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAwIwimlyrE4qQqYa2gA8Pfygd59USsveQ",
@@ -197,18 +239,22 @@
             appId: "1:409085062439:web:280589d1a3e12e7b980d02",
         };
 
-        let db, auth, html5QrCode;
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        let html5QrCode;
         let currentUserData = null;
+        let todayDocId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
             await signInAnonymously(auth);
 
+            // Cek Login Session
             const savedNis = localStorage.getItem('student_nis');
             if(savedNis) attemptLogin(savedNis);
 
+            // Permission File Listener
             document.getElementById('perm-file').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if(file) {
@@ -220,9 +266,19 @@
                     reader.readAsDataURL(file);
                 }
             });
+            
+            // Set Date Indonesia
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const todayIndo = new Date().toLocaleDateString('id-ID', options).toUpperCase();
+            
+            // Check if element exists before setting text
+            const headerDateEl = document.getElementById('header-date');
+            if(headerDateEl) {
+                headerDateEl.innerText = todayIndo;
+            }
         });
 
-        // --- NEW SMART LOGIN LOGIC ---
+        // --- AUTH LOGIC ---
         window.doLogin = () => {
             const nis = document.getElementById('login-nis').value.trim();
             if(nis) attemptLogin(nis);
@@ -236,26 +292,20 @@
             document.getElementById('login-error').classList.add('hidden');
             
             try {
-                // 1. Cek apa adanya (Raw)
                 let docSnap = await getDoc(doc(db, 'siswa', rawNis));
                 
-                // 2. Jika gagal, coba format otomatis (tambah titik)
                 if (!docSnap.exists()) {
-                    // Hapus semua karakter non-angka
                     const clean = rawNis.replace(/[^0-9]/g, '');
-                    // Jika panjang 9 angka (Format: 4.2.3), coba format jadi 2425.10.111
                     if (clean.length === 9) {
                         const formatted = `${clean.substring(0,4)}.${clean.substring(4,6)}.${clean.substring(6)}`;
                         docSnap = await getDoc(doc(db, 'siswa', formatted));
-                        if(docSnap.exists()) {
-                            rawNis = formatted; // Update nis yg dipakai login
-                        }
+                        if(docSnap.exists()) rawNis = formatted;
                     }
                 }
 
                 if (docSnap.exists()) {
                     currentUserData = { id: docSnap.id, ...docSnap.data() };
-                    localStorage.setItem('student_nis', docSnap.id); // Simpan ID yg benar (dgn titik)
+                    localStorage.setItem('student_nis', docSnap.id);
                     initAppUI();
                 } else {
                     document.getElementById('login-error').classList.remove('hidden');
@@ -280,61 +330,186 @@
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('user-name').textContent = currentUserData.nama;
             document.getElementById('user-class').textContent = currentUserData.kelas;
-            document.getElementById('user-avatar').src = currentUserData.foto || `https://ui-avatars.com/api/?name=${currentUserData.nama}`;
+            document.getElementById('user-avatar').src = currentUserData.foto || `https://ui-avatars.com/api/?name=${currentUserData.nama}&background=10b981&color=fff`;
             document.getElementById('profile-name').textContent = currentUserData.nama;
             document.getElementById('profile-nis').textContent = "NIS: " + currentUserData.id;
             document.getElementById('profile-avatar-lg').src = document.getElementById('user-avatar').src;
+            
             checkTodayStatus();
         }
 
-        async function checkTodayStatus() {
-            const today = new Date().toISOString().split('T')[0];
-            const docId = `${currentUserData.kelas}_${today}`;
-            try {
-                const docSnap = await getDoc(doc(db, 'presensi', docId));
-                if(docSnap.exists()) {
-                    const data = docSnap.data();
-                    const myRecord = data[currentUserData.id];
-                    if(myRecord && myRecord.status === 'h') updateStatusUI('Hadir', myRecord.time, 'bg-emerald-600');
-                    else if(myRecord && myRecord.status === 's') updateStatusUI('Sakit', 'Izin Guru', 'bg-blue-500');
-                    else if(myRecord && myRecord.status === 'i') updateStatusUI('Izin', 'Izin Guru', 'bg-yellow-500');
-                    else if(myRecord && myRecord.status === 'a') updateStatusUI('Alpha', '-', 'bg-red-500');
-                }
-            } catch(e) { console.log("Status check error", e); }
+        // --- ATTENDANCE & STATUS LOGIC ---
+        function getTodayString() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000; 
+            const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 10);
+            return localISOTime;
         }
 
-        function updateStatusUI(text, time, colorClass) {
-            document.getElementById('today-status').textContent = text;
-            document.getElementById('today-time').textContent = time !== '-' ? `Jam: ${time}` : 'Tercatat oleh Guru';
+        async function checkTodayStatus() {
+            const today = getTodayString();
+            const docId = `${currentUserData.kelas}_${today}`;
+            todayDocId = docId;
+
+            // Realtime Listener
+            onSnapshot(doc(db, 'presensi', docId), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const myRecord = data[currentUserData.id];
+                    if (myRecord && (myRecord.status === 'h' || myRecord.status === 'H')) {
+                        updateStatusUI('Hadir', myRecord.time, 'bg-gradient-to-r from-emerald-600 to-teal-600');
+                    } else if (myRecord && (myRecord.status === 's' || myRecord.status === 'S')) {
+                        updateStatusUI('Sakit', 'Izin Guru', 'bg-gradient-to-r from-blue-500 to-blue-700');
+                    } else if (myRecord && (myRecord.status === 'i' || myRecord.status === 'I')) {
+                        updateStatusUI('Izin', 'Izin Guru', 'bg-gradient-to-r from-yellow-500 to-yellow-600');
+                    } else if (myRecord && (myRecord.status === 'a' || myRecord.status === 'A')) {
+                        updateStatusUI('Alpha', '-', 'bg-gradient-to-r from-red-500 to-red-700');
+                    } else {
+                        resetStatusUI();
+                    }
+                } else {
+                    resetStatusUI();
+                }
+            });
+        }
+
+        function updateStatusUI(status, time, bgClass) {
+            document.getElementById('today-status').textContent = status;
+            document.getElementById('today-time').textContent = time !== '-' ? `Tercatat: ${time}` : 'Tercatat oleh Guru';
             const card = document.querySelector('#today-status').parentElement.parentElement;
-            card.className = card.className.replace(/bg-gradient-to-r from-emerald-600 to-teal-600|bg-[a-z]+-[0-9]+/, colorClass);
-            if(!card.className.includes(colorClass)) {
-                 card.className = `${colorClass} rounded-2xl p-6 text-white shadow-lg relative overflow-hidden`;
+            // Reset classes
+            card.className = `rounded-2xl p-6 text-white shadow-lg relative overflow-hidden ${bgClass}`;
+            
+            // Hide Scan/Token buttons if present
+            if(status === 'Hadir' || status === 'Sakit' || status === 'Izin') {
+               document.getElementById('btn-scan-main').classList.add('opacity-50', 'pointer-events-none');
+               document.getElementById('btn-token-manual').classList.add('opacity-50', 'pointer-events-none');
             }
         }
 
+        function resetStatusUI() {
+            document.getElementById('today-status').textContent = "Belum Absen";
+            document.getElementById('today-time').textContent = "Scan QR untuk kehadiran";
+            const card = document.querySelector('#today-status').parentElement.parentElement;
+            card.className = "bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden";
+            
+            document.getElementById('btn-scan-main').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('btn-token-manual').classList.remove('opacity-50', 'pointer-events-none');
+        }
+
+        // --- SCANNER LOGIC ---
+        window.openScanner = () => {
+            document.getElementById('scanner-modal').classList.remove('hidden');
+            document.getElementById('scanner-modal').classList.add('flex');
+            
+            html5QrCode = new Html5Qrcode("reader");
+            // Config for iOS/Android compatibility
+            const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+            
+            // Prefer back camera
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+            .catch(err => {
+                console.error(err);
+                alert("Gagal akses kamera. Pastikan izin diberikan atau gunakan Token Manual.");
+                window.closeScanner();
+            });
+        };
+
+        window.closeScanner = () => {
+            if(html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    document.getElementById('scanner-modal').classList.add('hidden');
+                    document.getElementById('scanner-modal').classList.remove('flex');
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('scanner-modal').classList.add('hidden');
+                document.getElementById('scanner-modal').classList.remove('flex');
+            }
+        };
+
+        async function onScanSuccess(decodedText) {
+            html5QrCode.pause();
+            document.getElementById('scan-status').textContent = "Memproses...";
+            try {
+                const data = JSON.parse(decodedText);
+                if (data.c !== currentUserData.kelas) throw new Error(`QR Kelas Salah (${data.c})`);
+                
+                await processAttendance(data.t, 'qr');
+            } catch (e) {
+                alert("QR Invalid: " + e.message);
+                setTimeout(() => html5QrCode.resume(), 2000);
+            }
+        }
+
+        function onScanFailure(error) {}
+
+        // --- MANUAL TOKEN LOGIC (NEW) ---
+        window.openManualInput = () => {
+            document.getElementById('token-modal').classList.remove('hidden');
+            document.getElementById('token-modal').classList.add('flex');
+            document.getElementById('manual-token-input').value = '';
+            document.getElementById('manual-token-input').focus();
+        };
+
+        window.closeManualInput = () => {
+            document.getElementById('token-modal').classList.add('hidden');
+            document.getElementById('token-modal').classList.remove('flex');
+        };
+
+        window.submitManualToken = async () => {
+            const token = document.getElementById('manual-token-input').value.toUpperCase();
+            if (token.length < 4) return alert("Token minimal 4 karakter");
+            
+            window.closeManualInput();
+            await processAttendance(token, 'manual');
+        };
+
+        // CORE ATTENDANCE PROCESSOR
+        async function processAttendance(token, method) {
+            const docRef = doc(db, 'presensi', todayDocId);
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            try {
+                const updateData = {};
+                updateData[currentUserData.id] = {
+                    status: 'h', 
+                    time: timeStr,
+                    method: method,
+                    token: token,
+                    timestamp: serverTimestamp() // Secure Server Time
+                };
+
+                await setDoc(docRef, updateData, { merge: true });
+                
+                alert(`✅ Presensi Berhasil! (${method === 'qr' ? 'Scan QR' : 'Token Manual'})`);
+                if(method === 'qr') window.closeScanner();
+                
+            } catch (e) {
+                alert("Gagal memproses presensi: " + e.message);
+                if(method === 'qr') html5QrCode.resume();
+            }
+        }
+
+        // --- PERMISSION LOGIC ---
         window.submitPermission = async () => {
             const type = document.querySelector('input[name="perm-type"]:checked').value;
             const reason = document.getElementById('perm-reason').value.trim();
             const fileInput = document.getElementById('perm-file');
             
-            if(!reason) { alert("Mohon isi alasan ketidakhadiran."); return; }
+            if(!reason) { alert("Isi alasan!"); return; }
             
-            const btn = document.querySelector('#page-permission button');
-            btn.disabled = true;
-            document.getElementById('btn-perm-text').textContent = "Mengirim...";
+            const btn = document.getElementById('btn-perm-top');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerText = "Mengirim...";
 
             try {
                 let base64Image = "";
-                if(fileInput.files.length > 0) {
-                    base64Image = await compressImage(fileInput.files[0]);
-                }
+                if(fileInput.files.length > 0) base64Image = await compressImage(fileInput.files[0]);
 
-                const today = new Date().toISOString().split('T')[0];
-                const docId = `${currentUserData.kelas}_${today}`;
-                const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
+                const today = getTodayString();
                 const proofId = `${currentUserData.id}_${today}`;
+                
                 await setDoc(doc(db, 'bukti_izin', proofId), {
                     nama: currentUserData.nama,
                     nis: currentUserData.id,
@@ -345,30 +520,23 @@
                     foto: base64Image
                 });
 
-                const docRef = doc(db, 'presensi', docId);
+                // Update presensi juga
+                const docRef = doc(db, 'presensi', todayDocId);
                 const updateData = {};
-                // TAMBAHAN: Tandai bahwa ada bukti foto
                 updateData[currentUserData.id] = { 
                     status: type, 
-                    time: time, 
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }), 
                     method: 'izin_app',
-                    buktiAda: true // <--- Flag ini penting untuk aplikasi guru
+                    buktiAda: true 
                 };
                 await setDoc(docRef, updateData, { merge: true });
 
-                alert("Permohonan berhasil dikirim.");
+                alert("Izin Berhasil Dikirim.");
                 window.switchPage('home');
-                checkTodayStatus();
-                document.getElementById('perm-reason').value = '';
-                document.getElementById('perm-file').value = '';
-                document.getElementById('perm-preview').classList.add('hidden');
+                checkTodayStatus(); 
 
-            } catch(e) {
-                alert("Gagal mengirim: " + e.message);
-            } finally {
-                btn.disabled = false;
-                document.getElementById('btn-perm-text').textContent = "Kirim Permohonan";
-            }
+            } catch(e) { alert("Gagal: " + e.message); } 
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
         };
 
         function compressImage(file) {
@@ -392,55 +560,7 @@
             });
         }
 
-        window.openScanner = () => {
-            document.getElementById('scanner-modal').classList.remove('hidden');
-            document.getElementById('scanner-modal').classList.add('flex');
-            
-            html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 250, height: 250 } }, onScanSuccess, onScanFailure)
-            .catch(err => {
-                document.getElementById('scan-status').textContent = "Error Kamera: " + err;
-                alert("Kamera butuh HTTPS. Gunakan localhost atau hosting SSL.");
-            });
-        };
-
-        window.closeScanner = () => {
-            if(html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    document.getElementById('scanner-modal').classList.add('hidden');
-                    document.getElementById('scanner-modal').classList.remove('flex');
-                });
-            } else {
-                document.getElementById('scanner-modal').classList.add('hidden');
-            }
-        };
-
-        async function onScanSuccess(decodedText) {
-            html5QrCode.pause();
-            document.getElementById('scan-status').textContent = "Memproses...";
-            try {
-                const data = JSON.parse(decodedText);
-                if (data.c !== currentUserData.kelas) throw new Error(`QR ini untuk kelas ${data.c}, kamu kelas ${currentUserData.kelas}`);
-                
-                const docId = `${data.c}_${data.d}`;
-                const time = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-                
-                const updateData = {};
-                updateData[currentUserData.id] = { status: 'h', time: time, method: 'qr', token: data.t };
-                
-                await setDoc(doc(db, 'presensi', docId), updateData, { merge: true });
-                
-                alert("✅ Presensi Berhasil!");
-                window.closeScanner();
-                checkTodayStatus();
-            } catch (e) {
-                alert("❌ Gagal: " + e.message);
-                setTimeout(() => html5QrCode.resume(), 2000);
-            }
-        }
-
-        function onScanFailure(error) {}
-
+        // --- NAVIGATION & UJIAN ---
         window.switchPage = (pageId) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + pageId).classList.add('active');
@@ -450,6 +570,7 @@
             if(pageId === 'home') navBtns[0].classList.add('active');
             else if(pageId === 'profile') navBtns[1].classList.add('active');
         };
+
     </script>
 </body>
 </html>
