@@ -455,7 +455,9 @@
             const isFull = document.fullscreenElement || document.webkitFullscreenElement;
 
             if (isSupported && !isFull) {
-                updateCheatCount();
+                // FIX: Tidak update cheat count di sini untuk mencegah double counting
+                // updateCheatCount(); 
+                
                 const limit = getCheatLimit();
                 if (cheatCount <= limit) {
                     blocker.style.display = 'flex';
