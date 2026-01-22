@@ -1,354 +1,234 @@
 <!DOCTYPE html>
-<html lang="id" class="antialiased">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Exam Portal - Comfort & Glow</title>
-    
+    <title>Siswa App - Comfort & Glow</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                        cyber: ['Orbitron', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        'deep': '#0f172a', 'surface': '#1e293b', 'primary': '#38bdf8',
-                        'accent': '#818cf8', 'success': '#34d399', 'warning': '#fbbf24', 'danger': '#f87171',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.6s ease-out',
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 3s infinite',
-                    },
-                    keyframes: {
-                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } }
+                        'cyber': { 900: '#02120a', 800: '#051f15', 700: '#064e3b', 500: '#10b981', 400: '#34d399' },
+                        'emerald': { 500: '#10b981', 600: '#059669', 700: '#047857', 800: '#065f46', 900: '#064e3b' }
                     }
                 }
             }
         }
     </script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script>MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } };</script>
-    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f172a;
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.1) 0px, transparent 50%);
-            background-attachment: fixed;
-            color: #f8fafc;
-            -webkit-user-select: none; user-select: none;
-        }
-        /* PREMIUM GLASS STYLE RESTORED */
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.70);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-        }
-        .glow-input {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid #334155;
-            color: #ffffff;
-            transition: all 0.3s ease;
-            font-family: 'JetBrains Mono', monospace;
-        }
-        .glow-input:focus {
-            border-color: #38bdf8;
-            background: rgba(15, 23, 42, 0.9);
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.15);
-            outline: none;
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-        .soal-text { font-size: 1.125rem; line-height: 1.8; color: #f1f5f9; font-weight: 400; transition: font-size 0.2s ease; }
-        .soal-text img { max-width: 100%; border-radius: 12px; margin: 1.5rem auto; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        .nav-grid-btn {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .nav-grid-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: scale(1.05); }
-        .nav-grid-btn.active { background: #38bdf8; border-color: #38bdf8; color: #0f172a; font-weight: 800; box-shadow: 0 0 20px rgba(56, 189, 248, 0.4); transform: scale(1.1); }
-        .nav-grid-btn.done { border-color: #34d399; color: #34d399; background: rgba(52, 211, 153, 0.1); }
-        .nav-grid-btn.flag { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.1); }
-        
-        /* Font size utility classes applied by JS */
-        .text-zoom-sm { font-size: 0.875rem !important; }
-        .text-zoom-md { font-size: 1.125rem !important; }
-        .text-zoom-lg { font-size: 1.5rem !important; line-height: 2rem !important; }
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .nav-item.active { color: #059669; } 
+        .nav-item.active svg { fill: currentColor; opacity: 0.1; }
+        #reader { width: 100%; border-radius: 1rem; overflow: hidden; }
+        #reader video { object-fit: cover; border-radius: 1rem; }
+        .page { display: none; padding-bottom: 80px; }
+        .page.active { display: block; }
     </style>
 </head>
-<body class="flex flex-col min-h-screen font-sans" oncontextmenu="return false;" onkeydown="return preventCheating(event)">
+<body class="bg-gray-50 text-gray-800 dark:bg-cyber-900 dark:text-white min-h-screen transition-colors duration-300">
 
-    <div class="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] animate-float"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-accent/5 rounded-full blur-[100px] animate-float" style="animation-delay: 3s"></div>
-    </div>
-
-    <!-- MODALS & OVERLAYS -->
-    <div id="warning-modal" class="fixed inset-0 z-[10000] bg-black/95 hidden flex-col items-center justify-center backdrop-blur-xl p-6 text-center animate-fade-in">
-        <div class="glass-panel border border-red-500/50 rounded-3xl p-10 max-w-md w-full shadow-[0_0_100px_rgba(239,68,68,0.4)]">
-            <div class="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-red-500/20">
-                <span class="text-5xl">⚠️</span>
-            </div>
-            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">PELANGGARAN!</h2>
-            <p class="text-slate-300 mb-6">Anda terdeteksi meninggalkan ujian. Ini tercatat sebagai pelanggaran.</p>
-            
-            <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20 mb-8">
-                <p class="text-red-400 text-xs font-mono uppercase tracking-widest mb-1">TOTAL PELANGGARAN</p>
-                <p class="text-4xl font-bold text-white font-mono"><span id="violation-count-display">0</span> <span class="text-lg text-slate-400 font-normal">x</span></p>
-            </div>
-
-            <button onclick="dismissWarning()" class="w-full py-4 bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white font-bold rounded-xl transition-all shadow-lg transform active:scale-95">
-                KEMBALI KE UJIAN
-            </button>
-        </div>
-    </div>
-
-    <div id="lock-modal" class="fixed inset-0 z-[10001] bg-black/95 hidden flex-col items-center justify-center p-6 text-center animate-fade-in">
-        <div class="glass-panel border border-red-600/50 rounded-3xl p-10 max-w-md w-full shadow-[0_0_120px_rgba(220,38,38,0.6)] relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 via-orange-500 to-red-500"></div>
-            <div class="mb-8">
-                <div class="text-7xl mb-4 animate-bounce">🔒</div>
-                <h2 class="text-3xl font-bold text-white mb-2 tracking-widest font-cyber">TERKUNCI</h2>
-                <p class="text-slate-400 text-sm">Batas toleransi kecurangan telah terlampaui.</p>
-            </div>
-            <div class="space-y-4">
-                <div class="relative">
-                    <input type="password" id="input-pin-unlock" class="glow-input w-full p-5 rounded-xl text-center text-2xl font-bold tracking-[0.5em] placeholder-slate-700" placeholder="••••••" maxlength="6">
-                </div>
-                <button onclick="attemptUnlock()" class="w-full py-4 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold shadow-xl transition-all transform hover:-translate-y-1">
-                    BUKA GEMBOK
-                </button>
-                <p class="text-xs text-slate-500 mt-4">Silakan panggil pengawas untuk membuka kunci.</p>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-50 bg-white dark:bg-cyber-900 flex flex-col items-center justify-center p-6">
+        <div class="w-24 h-24 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center shadow-sm mb-6">
+            <div class="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center shadow-lg text-white">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h4.01M16 3h5v5h-5V3zm0 13h5v5h-5v-5zm-9 4h10v2h-10v-2zm-6-6h10v2h-10v-2z"></path></svg>
             </div>
         </div>
+        <h1 class="text-2xl font-bold mb-1 text-gray-800 dark:text-emerald-50">Presensi Siswa</h1>
+        <p class="text-gray-500 dark:text-gray-400 text-sm mb-8">Masukkan NIS untuk memulai</p>
+        
+        <input type="text" inputmode="numeric" id="login-nis" class="w-full max-w-xs p-4 bg-gray-50 border border-gray-200 rounded-xl text-center text-lg font-bold tracking-widest focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none dark:bg-cyber-800 dark:border-emerald-800 dark:text-white transition-all" placeholder="Nomor Induk Siswa">
+        
+        <button onclick="window.doLogin()" class="mt-6 w-full max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-500/30 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+            <span>Masuk Aplikasi</span>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+        </button>
+        <p id="login-error" class="mt-4 text-red-500 text-sm hidden bg-red-50 dark:bg-red-900/20 px-3 py-1 rounded-lg border border-red-100 dark:border-red-800">NIS tidak ditemukan</p>
     </div>
 
-    <div id="fullscreen-blocker" class="fixed inset-0 z-[9999] bg-black flex-col items-center justify-center hidden">
-        <div class="p-8 text-center glass-panel rounded-3xl border border-white/10">
-            <h2 class="text-2xl font-bold text-white mb-4">LAYAR PENUH DIPERLUKAN</h2>
-            <p class="text-slate-400 mb-8">Klik tombol di bawah untuk melanjutkan ujian.</p>
-            <button onclick="requestFullScreenAgain()" class="px-8 py-3 bg-gradient-to-r from-primary to-accent text-white font-bold rounded-xl shadow-lg">LANJUTKAN</button>
-        </div>
-    </div>
-
-    <div id="loading-overlay" class="fixed inset-0 z-[80] bg-slate-900/90 flex flex-col items-center justify-center hidden backdrop-blur-md">
-        <div class="w-20 h-20 border-4 border-slate-700 border-t-primary rounded-full animate-spin mb-6"></div>
-        <div class="text-primary font-mono text-sm tracking-[0.3em] animate-pulse font-bold">SINKRONISASI DATA...</div>
-    </div>
-
-    <!-- SCREENS -->
-    <div id="screen-login" class="w-full max-w-md relative z-10 animate-fade-in p-4 mx-auto mt-20">
-        <div class="glass-panel rounded-3xl p-10 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-accent to-primary opacity-50"></div>
-            <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-primary to-accent p-[2px] shadow-2xl shadow-primary/30">
-                <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-            </div>
-            <h1 class="text-3xl font-bold text-white mb-2 tracking-tight">Portal Ujian</h1>
-            <p class="text-slate-400 text-sm mb-10">Masukkan NIS untuk memulai sesi aman.</p>
-            <div class="space-y-6">
-                <input type="text" id="input-nis" class="glow-input w-full p-5 rounded-2xl text-center text-xl font-bold uppercase tracking-widest placeholder-slate-600" placeholder="NOMOR SISWA">
-                <button onclick="checkNIS()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-primary to-accent hover:to-indigo-500 text-white font-bold shadow-lg shadow-primary/25 transition-all transform hover:scale-[1.02] active:scale-95 tracking-wide">
-                    MASUK SISTEM
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-token" class="hidden w-full max-w-md relative z-10 animate-fade-in p-4 mx-auto mt-20">
-        <div class="glass-panel rounded-3xl p-8 text-center border-t-4 border-t-success relative">
-            <button onclick="location.reload()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors" title="Keluar">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-            </button>
-            <div class="mb-8 mt-2">
-                <div class="relative inline-block">
-                    <div class="absolute inset-0 bg-success/20 blur-xl rounded-full"></div>
-                    <img src="" id="student-avatar" class="relative w-24 h-24 rounded-full object-cover bg-slate-800 mx-auto mb-4 border-2 border-success shadow-2xl">
-                </div>
-                <h3 id="confirm-name" class="text-2xl font-bold text-white mb-1 tracking-tight">NAMA</h3>
-                <span id="confirm-class" class="px-3 py-1 rounded-full bg-success/10 text-success text-xs font-bold border border-success/20">KELAS</span>
-            </div>
-            <div class="space-y-6">
+    <!-- MAIN APP -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <header class="px-6 pt-8 pb-4 bg-white dark:bg-cyber-800 shadow-sm sticky top-0 z-30 border-b border-gray-100 dark:border-emerald-900">
+            <div class="flex justify-between items-center">
                 <div>
-                    <label class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2 block">Kode Ujian</label>
-                    <input type="text" id="input-kode" class="glow-input w-full p-5 rounded-2xl text-center text-3xl font-bold uppercase tracking-[0.5em] placeholder-slate-700" placeholder="......" maxlength="6">
+                    <p id="header-date" class="text-xs text-gray-500 dark:text-emerald-400/80">Halo, selamat pagi</p>
+                    <h2 id="user-name" class="text-xl font-bold text-gray-900 dark:text-white">Nama Siswa</h2>
+                    <span id="user-class" class="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded dark:bg-emerald-900/30 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800">Kelas -</span>
                 </div>
-                <button onclick="startExam()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-success to-emerald-600 hover:to-emerald-500 text-white font-bold shadow-lg shadow-success/25 transition-all transform hover:scale-[1.02]">
-                    MULAI MENGERJAKAN
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-exam" class="hidden w-full max-w-7xl h-screen relative z-10 flex flex-col md:flex-row gap-6 p-4 pt-24 md:pt-28">
-        <header id="exam-header" class="fixed top-6 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl h-20 glass-panel rounded-2xl z-30 flex items-center justify-between px-6 md:px-8 shadow-2xl">
-             <div class="flex items-center gap-5">
-                <button onclick="toggleMobileNav()" class="md:hidden p-3 bg-slate-800/50 rounded-xl text-slate-300 hover:text-white border border-white/10">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-                </button>
-                <div class="hidden md:flex w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 items-center justify-center text-primary">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                </div>
-                <div>
-                    <h1 id="header-exam-name" class="font-bold text-white text-base md:text-lg line-clamp-1 tracking-tight">Memuat Ujian...</h1>
-                    <p id="header-student-name" class="text-[10px] md:text-xs text-primary font-mono uppercase tracking-wider">SISWA</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <!-- FONT SIZE CONTROLS (ZOOM) -->
-                <div class="flex items-center gap-1 bg-slate-800/50 rounded-lg p-1 border border-white/5 mr-2">
-                    <button onclick="resizeFont(-10)" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded transition-colors text-xs font-bold" title="Kecilkan Teks">A-</button>
-                    <button onclick="resizeFont(10)" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 rounded transition-colors text-lg font-bold" title="Besarkan Teks">A+</button>
-                </div>
-
-                <div class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-success/10 border border-success/20 text-success text-[10px] font-bold tracking-wider">
-                    <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span> ONLINE
-                </div>
-                <div class="text-right">
-                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest block mb-1">Sisa Waktu</span>
-                    <div id="timer-display" class="font-mono text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-md">00:00:00</div>
-                </div>
+                <img src="" id="user-avatar" class="w-10 h-10 rounded-full bg-gray-200 object-cover ring-2 ring-emerald-100 dark:ring-emerald-800">
             </div>
         </header>
 
-        <div class="flex-1 glass-panel rounded-3xl p-6 md:p-8 flex flex-col relative overflow-hidden shadow-2xl">
-            <div id="save-status" class="absolute top-6 right-6 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-lg font-bold uppercase tracking-wider opacity-0 transition-opacity duration-300 flex items-center gap-2">
-                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span> Tersimpan
+        <!-- PAGE: HOME -->
+        <div id="page-home" class="page active px-6 py-4 space-y-6">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-white/80 text-sm mb-1">Status Hari Ini</p>
+                    <h3 id="today-status" class="text-2xl font-bold">Belum Absen</h3>
+                    <p id="today-time" class="text-sm opacity-90 mt-1">Scan QR untuk kehadiran</p>
+                </div>
+                <div class="absolute right-[-20px] bottom-[-20px] opacity-20">
+                    <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                </div>
             </div>
-            
-            <div class="flex items-center justify-between mb-6 pb-6 border-b border-white/5">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-slate-800/50 rounded-xl flex items-center justify-center font-bold text-slate-400 text-xl border border-white/5 shadow-inner">
-                        <span id="q-number">1</span>
+
+            <!-- MENU GRID (Updated: Scan, Token Manual, Izin) -->
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Tombol Scan -->
+                <button id="btn-scan-main" onclick="window.openScanner()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-emerald-200 dark:hover:border-emerald-700 group">
+                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h4.01M16 3h5v5h-5V3zm0 13h5v5h-5v-5zm-9 4h10v2h-10v-2zm-6-6h10v2h-10v-2z"></path></svg>
                     </div>
-                    <span id="q-type-badge" class="px-3 py-1.5 bg-slate-700/50 rounded-lg text-xs font-bold text-slate-300 border border-white/5 uppercase tracking-wide">PG</span>
-                </div>
-                <label class="flex items-center gap-3 cursor-pointer group select-none bg-slate-800/30 px-4 py-2 rounded-xl border border-white/5 hover:bg-amber-500/10 hover:border-amber-500/30 transition-all">
-                    <span class="text-xs font-bold text-slate-400 group-hover:text-amber-400 uppercase tracking-wider">Ragu-ragu</span>
-                    <input type="checkbox" id="check-ragu" class="accent-amber-500 w-4 h-4 cursor-pointer">
-                </label>
+                    <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Scan Masuk</span>
+                </button>
+
+                <!-- Tombol Manual Token (Menggantikan Text Link) -->
+                <button id="btn-token-manual" onclick="window.openManualInput()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-purple-200 dark:hover:border-purple-700 group">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                    </div>
+                    <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Input Token</span>
+                </button>
+
+                <!-- Tombol Izin -->
+                <button onclick="window.switchPage('permission')" class="col-span-2 bg-white dark:bg-cyber-800 p-5 rounded-2xl shadow-sm flex items-center justify-between px-6 gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-blue-200 dark:hover:border-blue-700 group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div class="text-left">
+                            <span class="block font-bold text-sm text-gray-700 dark:text-gray-200">Izin / Sakit</span>
+                            <span class="text-xs text-gray-400">Kirim surat keterangan</span>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
             </div>
 
-            <div class="flex-1 overflow-y-auto custom-scrollbar pr-2" id="exam-content-area">
-                <div id="q-content" class="soal-text mb-8"></div>
-                <div id="q-options" class="space-y-3 pb-4 soal-text"></div>
-            </div>
-
-            <div class="mt-6 pt-6 border-t border-white/5 flex justify-between items-center">
-                <button onclick="prevQ()" id="btn-prev" class="px-6 py-3 border border-slate-600 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-all font-bold text-xs uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed">
-                    Kembali
-                </button>
-                <button onclick="nextQ()" id="btn-next" class="px-8 py-3 bg-gradient-to-r from-primary to-accent hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 text-xs uppercase tracking-widest">
-                    Selanjutnya
-                </button>
-                <button onclick="showSummary()" id="btn-finish" class="hidden px-8 py-3 bg-gradient-to-r from-success to-emerald-600 hover:to-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-success/20 transition-all transform hover:-translate-y-0.5 text-xs uppercase tracking-widest">
-                    Selesai Ujian
-                </button>
-            </div>
         </div>
 
-        <div class="hidden md:flex w-80 flex-none glass-panel rounded-3xl p-6 flex-col shadow-xl h-full max-h-[calc(100vh-140px)]">
-            <h3 class="text-center text-xs font-bold text-slate-400 mb-6 uppercase tracking-[0.2em] border-b border-white/5 pb-4">Navigasi Soal</h3>
-            <div id="nav-grid" class="grid grid-cols-5 gap-3 overflow-y-auto flex-1 content-start custom-scrollbar pr-2 pb-4"></div>
-            <div class="mt-4 pt-4 border-t border-white/5 space-y-3">
-                <div class="flex items-center gap-3 text-[10px] text-slate-400 font-medium uppercase tracking-wide">
-                    <div class="w-3 h-3 bg-primary rounded-md shadow-[0_0_8px_#0ea5e9]"></div> Sedang Dikerjakan
-                </div>
-                <div class="flex items-center gap-3 text-[10px] text-slate-400 font-medium uppercase tracking-wide">
-                    <div class="w-3 h-3 bg-success/20 border border-success text-success rounded-md flex items-center justify-center">✓</div> Terjawab
-                </div>
-                <div class="flex items-center gap-3 text-[10px] text-slate-400 font-medium uppercase tracking-wide">
-                    <div class="w-3 h-3 bg-warning/20 border border-warning text-warning rounded-md"></div> Ragu-ragu
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="mobile-nav-overlay" class="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm hidden flex-col justify-end md:hidden animate-fade-in" onclick="if(event.target===this) toggleMobileNav()">
-        <div class="bg-surface border-t border-white/10 p-6 rounded-t-3xl max-h-[70vh] overflow-y-auto">
+        <!-- PAGE: PERMISSION -->
+        <div id="page-permission" class="page px-6 py-4">
+            <!-- HEADER PERMISSION (Updated) -->
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-white font-bold tracking-tight">Daftar Soal</h3>
-                <button onclick="toggleMobileNav()" class="p-2 bg-slate-800 rounded-full text-slate-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <div class="flex items-center gap-3">
+                    <button onclick="window.switchPage('home')" class="p-2 bg-white dark:bg-cyber-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-cyber-700 border border-gray-100 dark:border-emerald-900">
+                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800 dark:text-white leading-tight">Formulir Izin</h2>
+                        <p class="text-xs text-gray-500">Isi data dengan benar</p>
+                    </div>
+                </div>
+                <!-- Tombol Kirim Pindah ke Sini -->
+                <button onclick="window.submitPermission()" id="btn-perm-top" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-lg shadow-emerald-500/20 transition-all transform active:scale-95 flex items-center gap-2">
+                    <span>Kirim</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
             </div>
-            <div id="mobile-nav-grid" class="grid grid-cols-5 gap-3"></div>
+
+             <div class="space-y-5 bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-emerald-900">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Keterangan</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="perm-type" value="s" class="peer sr-only" checked>
+                            <div class="p-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 peer-checked:border-blue-500 peer-checked:bg-blue-50 dark:peer-checked:bg-blue-900/20 text-center transition-all">
+                                <span class="font-bold text-blue-600 dark:text-blue-400">Sakit</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="perm-type" value="i" class="peer sr-only">
+                            <div class="p-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 peer-checked:border-yellow-500 peer-checked:bg-yellow-50 dark:peer-checked:bg-yellow-900/20 text-center transition-all">
+                                <span class="font-bold text-yellow-600 dark:text-yellow-400">Izin</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alasan Lengkap</label>
+                    <textarea id="perm-reason" rows="4" class="w-full p-4 bg-gray-50 dark:bg-cyber-900 border border-gray-200 dark:border-emerald-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white" placeholder="Contoh: Demam tinggi sejak semalam..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bukti Foto (Surat)</label>
+                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer bg-gray-50 dark:bg-cyber-900 hover:bg-gray-100 dark:hover:bg-cyber-800 transition-colors relative overflow-hidden">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6 z-10">
+                            <svg class="w-8 h-8 mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <p class="text-xs text-gray-500">Klik untuk ambil foto</p>
+                        </div>
+                        <input type="file" id="perm-file" class="hidden" accept="image/*" capture="environment">
+                        <img id="perm-preview" class="absolute inset-0 w-full h-full object-cover opacity-50 hidden">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE: PROFILE -->
+        <div id="page-profile" class="page px-6 py-4 text-center">
+            <img src="" id="profile-avatar-lg" class="w-24 h-24 rounded-full bg-gray-200 mx-auto mb-4 object-cover ring-4 ring-white dark:ring-cyber-800 shadow-lg">
+            <h2 id="profile-name" class="text-xl font-bold text-gray-900 dark:text-white">Nama Siswa</h2>
+            <p id="profile-nis" class="text-gray-500 dark:text-emerald-400 mb-8 font-mono">NIS: -</p>
+            <button onclick="window.doLogout()" class="w-full bg-gray-200 hover:bg-gray-300 dark:bg-cyber-800 dark:hover:bg-cyber-700 text-gray-700 dark:text-gray-300 font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Keluar Akun
+            </button>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="fixed bottom-0 w-full bg-white dark:bg-cyber-800 border-t border-gray-200 dark:border-emerald-900 flex justify-around py-3 pb-5 z-40">
+            <button onclick="window.switchPage('home')" class="nav-item active flex flex-col items-center gap-1 w-full group">
+                <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[10px] font-bold">Beranda</span>
+            </button>
+            <button onclick="window.switchPage('profile')" class="nav-item text-gray-400 flex flex-col items-center gap-1 w-full group">
+                <svg class="w-6 h-6 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                <span class="text-[10px] font-bold">Profil</span>
+            </button>
         </div>
     </div>
 
-    <div id="summary-modal" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="glass-panel w-full max-w-2xl rounded-3xl p-8 border border-white/10 animate-fade-in relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-success to-primary"></div>
-            <h3 class="text-2xl font-bold text-white mb-8 tracking-tight">Konfirmasi Selesai</h3>
-            <div class="grid grid-cols-3 gap-4 mb-8">
-                <div class="bg-success/10 border border-success/20 p-4 rounded-2xl text-center">
-                    <span id="sum-answered" class="text-3xl font-bold text-success block mb-1">0</span>
-                    <span class="text-[10px] text-success/70 uppercase font-bold tracking-wider">Terjawab</span>
-                </div>
-                <div class="bg-warning/10 border border-warning/20 p-4 rounded-2xl text-center">
-                    <span id="sum-ragu" class="text-3xl font-bold text-warning block mb-1">0</span>
-                    <span class="text-[10px] text-warning/70 uppercase font-bold tracking-wider">Ragu</span>
-                </div>
-                <div class="bg-slate-700/30 border border-slate-600/30 p-4 rounded-2xl text-center">
-                    <span id="sum-empty" class="text-3xl font-bold text-slate-400 block mb-1">0</span>
-                    <span class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Kosong</span>
-                </div>
-            </div>
-            <div id="summary-grid" class="grid grid-cols-8 sm:grid-cols-10 gap-2 mb-8 max-h-48 overflow-y-auto custom-scrollbar pr-2"></div>
-            <div class="flex justify-end gap-3 pt-6 border-t border-white/5">
-                <button onclick="closeSummary()" class="px-6 py-3 border border-slate-600 text-slate-300 rounded-xl hover:bg-slate-800 transition-all font-bold text-sm">Batal</button>
-                <button onclick="confirmFinish()" class="px-8 py-3 bg-gradient-to-r from-success to-emerald-600 hover:to-emerald-500 text-white rounded-xl font-bold shadow-lg shadow-success/20 transition-all text-sm transform hover:scale-[1.02]">
-                    Kumpulkan Jawaban
-                </button>
-            </div>
+    <!-- SCANNER MODAL -->
+    <div id="scanner-modal" class="fixed inset-0 z-[60] bg-black hidden flex-col">
+        <div class="p-4 flex justify-between items-center text-white absolute top-0 w-full z-10 bg-gradient-to-b from-black/50 to-transparent">
+            <h3 class="font-bold">Scan QR Guru</h3>
+            <button onclick="window.closeScanner()" class="p-2 bg-white/20 rounded-full backdrop-blur hover:bg-white/30 transition"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        </div>
+        <div id="reader" class="w-full h-full bg-black relative">
+            <!-- Scan region marker -->
+            <div class="absolute inset-0 border-2 border-emerald-500 opacity-50 pointer-events-none m-12 rounded-xl"></div>
+        </div>
+        <div class="absolute bottom-10 w-full text-center text-white/80 px-6">
+            <p class="text-sm mb-4">Arahkan kamera ke QR Code di layar</p>
+            <p id="scan-status" class="text-xs font-mono bg-black/50 py-1 px-3 rounded-full inline-block backdrop-blur">Kamera Aktif</p>
         </div>
     </div>
 
-    <div id="screen-result" class="hidden w-full max-w-md relative z-10 p-4 mx-auto mt-20 text-center">
-        <div class="glass-panel rounded-3xl p-12 border-t-4 border-success shadow-2xl relative overflow-hidden">
-            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-success/10 border border-success/30 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)]">
-                <svg class="w-10 h-10 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <!-- MANUAL TOKEN MODAL (NEW) -->
+    <div id="token-modal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
+        <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-6 shadow-2xl relative animate-fade-in-up">
+            <button onclick="closeManualInput()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl text-indigo-600">⌨️</div>
+                <h3 class="font-bold text-gray-800 dark:text-white">Input Token</h3>
+                <p class="text-xs text-gray-500">Masukkan 4 digit kode dari guru</p>
             </div>
-            <h2 class="text-3xl font-bold text-white mb-2 tracking-tight">UJIAN SELESAI</h2>
-            <p class="text-success text-xs uppercase tracking-widest mb-10 font-bold bg-success/5 py-2 rounded-lg inline-block px-4 border border-success/10">Jawaban berhasil disimpan</p>
-            
-            <div id="score-box" class="hidden mb-8 bg-slate-900/50 p-8 rounded-3xl border border-slate-700/50 relative group">
-                <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mb-2">Nilai Anda</p>
-                <p id="final-score" class="text-7xl font-bold text-white font-mono tracking-tighter drop-shadow-lg">0</p>
-            </div>
-            
-            <div id="waiting-box" class="hidden mb-8 bg-warning/5 p-8 rounded-3xl border border-warning/20">
-                <div class="animate-pulse">
-                    <p class="text-warning font-bold text-lg mb-2">MENUNGGU HASIL</p>
-                    <p class="text-slate-400 text-xs">Nilai sedang diproses oleh guru.</p>
-                </div>
-            </div>
-            
-            <button onclick="location.reload()" class="w-full py-4 rounded-xl border border-slate-600 text-slate-300 hover:text-white hover:bg-slate-800 transition-all font-bold tracking-wider text-sm">KEMBALI KE BERANDA</button>
+            <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
+            <button onclick="submitManualToken()" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Verifikasi</button>
         </div>
     </div>
 
-    <!-- FIX: Menghapus sintaks markdown dari import statements -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, query, where, getDocs, doc, setDoc, onSnapshot, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAwIwimlyrE4qQqYa2gA8Pfygd59USsveQ",
@@ -356,713 +236,341 @@
             projectId: "aplikasi-ulangan-01",
             storageBucket: "aplikasi-ulangan-01.firebasestorage.app",
             messagingSenderId: "409085062439",
-            appId: "1:409085062439:web:280589d1a3e12e7b980d02"
+            appId: "1:409085062439:web:280589d1a3e12e7b980d02",
         };
 
-        let db, auth, userId, studentData, examData, questions = [], answers = [], currentIndex = 0, timerInterval, cheatCount = 0, examEndTime;
-        let isSubmitting = false;
-        window.isUploading = false;
-        let lastCheatTime = 0; // Debounce Timer
-        let currentFontSize = 100; // Persentase Zoom Font
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
         
-        let resultListener = null;
-        let examListener = null;
+        let html5QrCode;
+        let currentUserData = null;
+        let todayDocId = null;
 
-        window.preventCheating = (e) => { if (e.ctrlKey || e.key === 'F12') return false; };
+        document.addEventListener('DOMContentLoaded', async () => {
+            await signInAnonymously(auth);
 
-        // --- FONT SIZE CONTROL (ZOOM) ---
-        window.resizeFont = (delta) => {
-            currentFontSize += delta;
-            // Batasi antara 80% sampai 160%
-            if(currentFontSize < 80) currentFontSize = 80;
-            if(currentFontSize > 160) currentFontSize = 160;
-            
-            const qContent = document.getElementById('q-content');
-            const qOptions = document.getElementById('q-options');
-            
-            if(qContent) qContent.style.fontSize = `${currentFontSize}%`;
-            if(qOptions) qOptions.style.fontSize = `${currentFontSize}%`;
-        };
-        
-        // --- SECURITY SYSTEM ---
-        function getCheatLimit() {
-            if (!examData) return 3;
-            return (examData.maxCurang !== undefined && examData.maxCurang !== null && examData.maxCurang !== "") ? parseInt(examData.maxCurang) : 3;
-        }
+            // Cek Login Session
+            const savedNis = localStorage.getItem('student_nis');
+            if(savedNis) attemptLogin(savedNis);
 
-        function updateCheatCount() {
-            const now = Date.now();
-            if (now - lastCheatTime < 2000) return; // Prevent rapid fire (Double Warning Fix)
-            
-            lastCheatTime = now;
-            cheatCount++; 
-            
-            // Simpan ke LocalStorage & Server
-            if(examData && studentData) {
-                localStorage.setItem(`cheat_${examData.kodeUjian}_${studentData.nis}`, cheatCount);
-                const resRef = doc(db, 'hasil_ujian', `${examData.kodeUjian}_${studentData.nis}`);
-                updateDoc(resRef, { pelanggaran: cheatCount }).catch(e=>{});
-            }
-
-            // TRIGGER WARNING ONLY HERE (Not in checkSecurityStatus)
-            checkSecurityStatus();
-        }
-
-        function checkSecurityStatus() {
-            const limit = getCheatLimit();
-            
-            if (cheatCount > limit) {
-                // LOCKDOWN
-                document.getElementById('warning-modal').classList.add('hidden');
-                document.getElementById('warning-modal').classList.remove('flex');
-                document.getElementById('fullscreen-blocker').style.display = 'none';
-                
-                document.getElementById('lock-modal').classList.remove('hidden');
-                document.getElementById('lock-modal').classList.add('flex');
-            } else if (cheatCount > 0) {
-                // WARNING
-                document.getElementById('violation-count-display').textContent = cheatCount;
-                if (document.getElementById('lock-modal').classList.contains('hidden')) {
-                    document.getElementById('warning-modal').classList.remove('hidden');
-                    document.getElementById('warning-modal').classList.add('flex');
+            // Permission File Listener
+            document.getElementById('perm-file').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if(file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('perm-preview').src = e.target.result;
+                        document.getElementById('perm-preview').classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
                 }
-            }
-        }
-
-        // Detector 1: Tab Switch
-        document.addEventListener("visibilitychange", () => {
-            if (window.isUploading || isSubmitting || document.getElementById('screen-exam').classList.contains('hidden')) return;
+            });
             
-            if (document.hidden) {
-                updateCheatCount();
-            } else {
-                // FIX: Jangan tampilkan warning lagi jika hanya kembali (kecuali sudah harus lock)
-                const limit = getCheatLimit();
-                if (cheatCount > limit) {
-                    checkSecurityStatus(); // Hanya panggil untuk lock
-                }
+            // Set Date Indonesia
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const todayIndo = new Date().toLocaleDateString('id-ID', options).toUpperCase();
+            
+            // Check if element exists before setting text
+            const headerDateEl = document.getElementById('header-date');
+            if(headerDateEl) {
+                headerDateEl.innerText = todayIndo;
             }
         });
 
-        // Detector 2: Exit Fullscreen (iOS FIX ADDED)
-        const handleFullscreenChange = () => {
-            if (isSubmitting || window.isUploading || document.getElementById('screen-exam').classList.contains('hidden')) return;
-
-            const blocker = document.getElementById('fullscreen-blocker');
-            // Cek apakah browser mendukung fullscreen (Fix untuk iPhone yang biasanya false)
-            const isSupported = document.fullscreenEnabled || document.webkitFullscreenEnabled;
-            // Cek apakah sedang fullscreen
-            const isFull = document.fullscreenElement || document.webkitFullscreenElement;
-
-            if (isSupported && !isFull) {
-                // FIX: Tidak update cheat count di sini untuk mencegah double counting
-                // updateCheatCount(); 
-                
-                const limit = getCheatLimit();
-                if (cheatCount <= limit) {
-                    blocker.style.display = 'flex';
-                } else {
-                    blocker.style.display = 'none';
-                }
-            } else {
-                blocker.style.display = 'none';
-            }
-        };
-        // Dengarkan event standar dan webkit (untuk kompatibilitas mobile)
-        document.addEventListener("fullscreenchange", handleFullscreenChange);
-        document.addEventListener("webkitfullscreenchange", handleFullscreenChange);
-
-        window.onfocus = () => { setTimeout(() => window.isUploading = false, 1000); };
-        
-        window.dismissWarning = () => {
-            document.getElementById('warning-modal').classList.add('hidden');
-            document.getElementById('warning-modal').classList.remove('flex');
-            if (!document.fullscreenElement) requestFullScreenAgain();
+        // --- AUTH LOGIC ---
+        window.doLogin = () => {
+            const nis = document.getElementById('login-nis').value.trim();
+            if(nis) attemptLogin(nis);
         };
 
-        window.requestFullScreenAgain = () => {
-            document.documentElement.requestFullscreen().catch(e=>{});
-            // Tidak perlu cek status lagi disini agar tidak loop popup
-        };
-
-        // Unlock Logic
-        window.attemptUnlock = () => {
-            const pin = document.getElementById('input-pin-unlock').value;
-            if(pin === examData.pinReset) {
-                document.getElementById('lock-modal').classList.add('hidden');
-                document.getElementById('lock-modal').classList.remove('flex');
-                document.getElementById('input-pin-unlock').value = '';
-                
-                // Beri 1 kesempatan terakhir (Reset ke limit)
-                const limit = getCheatLimit();
-                cheatCount = Math.max(0, limit); 
-                lastCheatTime = Date.now();
-                
-                const key = `cheat_${examData.kodeUjian}_${studentData.nis}`;
-                localStorage.setItem(key, cheatCount);
-                
-                const resRef = doc(db, 'hasil_ujian', `${examData.kodeUjian}_${studentData.nis}`);
-                updateDoc(resRef, { pelanggaran: cheatCount }).catch(e=>{});
-
-                alert("Gembok terbuka! Kesempatan TERAKHIR. Jangan keluar lagi.");
-                requestFullScreenAgain();
-            } else {
-                alert("PIN Guru Salah!");
-            }
-        };
-
-        // --- CORE LOGIC ---
-
-        (async function() {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            await signInAnonymously(auth);
-        })();
-
-        // TIME FIX UTILITY (WIB)
-        function getIndoDateString() {
-            // Force return YYYY-MM-DD in Indonesia Time (UTC+7)
-            const now = new Date();
-            const jakartaOffset = 7 * 60; // Minutes
-            const localOffset = now.getTimezoneOffset(); // Minutes
-            const jakartaTime = new Date(now.getTime() + (localOffset + jakartaOffset) * 60000);
-            return jakartaTime.toISOString().split('T')[0];
-        }
-
-        window.checkNIS = async () => {
-            const nis = document.getElementById('input-nis').value.trim();
-            if(!nis) return alert('Isi NIS!');
-            showLoading(true);
+        async function attemptLogin(rawNis) {
+            const btn = document.querySelector('#login-screen button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Memeriksa...</span>'; 
+            btn.disabled = true;
+            document.getElementById('login-error').classList.add('hidden');
+            
             try {
-                // Try direct lookup
-                let snap = await getDoc(doc(db, 'siswa', nis));
+                let docSnap = await getDoc(doc(db, 'siswa', rawNis));
                 
-                // Fallback smart lookup (e.g. 242510123 -> 2425.10.123)
-                if (!snap.exists()) {
-                    const clean = nis.replace(/[^0-9]/g, '');
+                if (!docSnap.exists()) {
+                    const clean = rawNis.replace(/[^0-9]/g, '');
                     if (clean.length === 9) {
                         const formatted = `${clean.substring(0,4)}.${clean.substring(4,6)}.${clean.substring(6)}`;
-                        snap = await getDoc(doc(db, 'siswa', formatted));
+                        docSnap = await getDoc(doc(db, 'siswa', formatted));
+                        if(docSnap.exists()) rawNis = formatted;
                     }
                 }
 
-                if(snap.exists()) {
-                    studentData = { nis: snap.id, ...snap.data() };
-                    document.getElementById('confirm-name').textContent = studentData.nama;
-                    document.getElementById('confirm-class').textContent = studentData.kelas;
-                    document.getElementById('student-avatar').src = studentData.foto || `https://ui-avatars.com/api/?name=${studentData.nama}&background=0ea5e9&color=fff`;
-                    switchScreen('screen-token');
-                } else alert('NIS tidak ditemukan');
-            } catch(e) { alert('Error: '+e.message); }
-            showLoading(false);
+                if (docSnap.exists()) {
+                    currentUserData = { id: docSnap.id, ...docSnap.data() };
+                    localStorage.setItem('student_nis', docSnap.id);
+                    initAppUI();
+                } else {
+                    document.getElementById('login-error').classList.remove('hidden');
+                    localStorage.removeItem('student_nis');
+                }
+            } catch (e) {
+                alert("Error login: " + e.message);
+            } finally {
+                btn.innerHTML = originalText; btn.disabled = false;
+            }
+        }
+
+        window.doLogout = () => {
+            if(confirm('Keluar dari akun?')) {
+                localStorage.removeItem('student_nis');
+                location.reload();
+            }
         };
 
-        // --- FUNGSI PENGACAKAN CERDAS (SMART SHUFFLE) ---
-        // Menjaga soal dengan Group ID yang sama tetap berkumpul jadi satu blok
-        function smartShuffle(daftarSoal) {
-            const groups = new Map();
-            const singles = [];
+        function initAppUI() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            document.getElementById('user-name').textContent = currentUserData.nama;
+            document.getElementById('user-class').textContent = currentUserData.kelas;
+            document.getElementById('user-avatar').src = currentUserData.foto || `https://ui-avatars.com/api/?name=${currentUserData.nama}&background=10b981&color=fff`;
+            document.getElementById('profile-name').textContent = currentUserData.nama;
+            document.getElementById('profile-nis').textContent = "NIS: " + currentUserData.id;
+            document.getElementById('profile-avatar-lg').src = document.getElementById('user-avatar').src;
+            
+            checkTodayStatus();
+        }
 
-            daftarSoal.forEach(soal => {
-                // Ambil Group ID dari metadata (pastikan aman jika undefined)
-                const gid = soal.metadata && soal.metadata.groupId ? soal.metadata.groupId : null;
-                
-                if (gid) {
-                    // Jika punya Group ID, kumpulkan dalam array khusus grup tersebut
-                    if (!groups.has(gid)) {
-                        groups.set(gid, []);
+        // --- ATTENDANCE & STATUS LOGIC ---
+        function getTodayString() {
+            const now = new Date();
+            const offset = now.getTimezoneOffset() * 60000; 
+            const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 10);
+            return localISOTime;
+        }
+
+        async function checkTodayStatus() {
+            const today = getTodayString();
+            const docId = `${currentUserData.kelas}_${today}`;
+            todayDocId = docId;
+
+            // Realtime Listener
+            onSnapshot(doc(db, 'presensi', docId), (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const myRecord = data[currentUserData.id];
+                    if (myRecord && (myRecord.status === 'h' || myRecord.status === 'H')) {
+                        updateStatusUI('Hadir', myRecord.time, 'bg-gradient-to-r from-emerald-600 to-teal-600');
+                    } else if (myRecord && (myRecord.status === 's' || myRecord.status === 'S')) {
+                        updateStatusUI('Sakit', 'Izin Guru', 'bg-gradient-to-r from-blue-500 to-blue-700');
+                    } else if (myRecord && (myRecord.status === 'i' || myRecord.status === 'I')) {
+                        updateStatusUI('Izin', 'Izin Guru', 'bg-gradient-to-r from-yellow-500 to-yellow-600');
+                    } else if (myRecord && (myRecord.status === 'a' || myRecord.status === 'A')) {
+                        updateStatusUI('Alpha', '-', 'bg-gradient-to-r from-red-500 to-red-700');
+                    } else {
+                        resetStatusUI();
                     }
-                    groups.get(gid).push(soal);
                 } else {
-                    // Jika tidak punya grup (soal jomblo), masukkan ke singles
-                    singles.push(soal);
+                    resetStatusUI();
                 }
             });
-
-            // --- LOGIKA PENGURUTAN INTERNAL GRUP ---
-            // Otomatis menaruh soal dengan naskah TERPANJANG di paling atas (Asumsi: Wacana)
-            for (let [gid, groupList] of groups) {
-                groupList.sort((a, b) => {
-                    const lenA = (a.naskah || "").length;
-                    const lenB = (b.naskah || "").length;
-                    return lenB - lenA; // Descending (Yang panjang di atas)
-                });
-            }
-
-            // Gabungkan Single + Kelompok menjadi array blok
-            // (Blok bisa berisi 1 soal single, atau array berisi banyak soal grup)
-            let blocks = [
-                ...singles,
-                ...Array.from(groups.values()) 
-            ];
-
-            // Lakukan pengacakan pada blok-blok tersebut (Fisher-Yates Shuffle)
-            for (let i = blocks.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [blocks[i], blocks[j]] = [blocks[j], blocks[i]];
-            }
-
-            // Ratakan kembali (Flatten) menjadi satu daftar soal panjang
-            return blocks.flat();
         }
 
-        // --- FUNGSI SHUFFLE ARRAY BIASA (Fix: Ditambahkan) ---
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+        function updateStatusUI(status, time, bgClass) {
+            document.getElementById('today-status').textContent = status;
+            document.getElementById('today-time').textContent = time !== '-' ? `Tercatat: ${time}` : 'Tercatat oleh Guru';
+            const card = document.querySelector('#today-status').parentElement.parentElement;
+            // Reset classes
+            card.className = `rounded-2xl p-6 text-white shadow-lg relative overflow-hidden ${bgClass}`;
+            
+            // Hide Scan/Token buttons if present
+            if(status === 'Hadir' || status === 'Sakit' || status === 'Izin') {
+               document.getElementById('btn-scan-main').classList.add('opacity-50', 'pointer-events-none');
+               document.getElementById('btn-token-manual').classList.add('opacity-50', 'pointer-events-none');
             }
         }
 
-        window.startExam = async () => {
-            const code = document.getElementById('input-kode').value.trim().toUpperCase();
-            if(!code) return alert('Kode Salah!');
+        function resetStatusUI() {
+            document.getElementById('today-status').textContent = "Belum Absen";
+            document.getElementById('today-time').textContent = "Scan QR untuk kehadiran";
+            const card = document.querySelector('#today-status').parentElement.parentElement;
+            card.className = "bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden";
             
-            // [iPhone Fix] Coba fullscreen dengan aman (tidak error jika tidak support)
-            try { 
-                if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
-                else if (document.documentElement.webkitRequestFullscreen) await document.documentElement.webkitRequestFullscreen();
-            } catch(e){}
+            document.getElementById('btn-scan-main').classList.remove('opacity-50', 'pointer-events-none');
+            document.getElementById('btn-token-manual').classList.remove('opacity-50', 'pointer-events-none');
+        }
+
+        // --- SCANNER LOGIC ---
+        window.openScanner = () => {
+            document.getElementById('scanner-modal').classList.remove('hidden');
+            document.getElementById('scanner-modal').classList.add('flex');
             
-            showLoading(true);
+            html5QrCode = new Html5Qrcode("reader");
+            // Config for iOS/Android compatibility
+            const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
             
-            // --- SECURITY & ATTENDANCE CHECK ---
-            const today = getIndoDateString(); // Menggunakan fungsi fix Timezone Indonesia
-            try {
-                // 1. Cek Presensi Harian (Wajib Hadir)
-                const presensiDocRef = doc(db, 'presensi', `${studentData.kelas}_${today}`);
-                const presensiSnap = await getDoc(presensiDocRef);
-                
-                if (!presensiSnap.exists() || !presensiSnap.data()[studentData.nis]) {
-                    // Fallback: Check if teacher allows exam without presence? No, strict rule.
-                    throw new Error("ANDA BELUM ABSENSI! Silakan scan QR Presensi terlebih dahulu.");
-                }
-                
-                const statusHadir = presensiSnap.data()[studentData.nis].status;
-                if (statusHadir !== 'h' && statusHadir !== 'H') {
-                    throw new Error(`STATUS KEHADIRAN ANDA: ${statusHadir.toUpperCase()}. Ujian ditolak.`);
-                }
-
-                // 2. Load Ujian
-                const snap = await getDoc(doc(db, 'ujian_terjadwal', code));
-                if(!snap.exists()) throw new Error('Kode Ujian Tidak Valid');
-                examData = snap.data();
-
-                // 3. Validasi Target Kelas
-                if(!examData.targetSemuaKelas && !examData.targetKelas.includes(studentData.kelas)) {
-                    throw new Error('Ujian ini bukan untuk kelas Anda.');
-                }
-
-                const resRef = doc(db, 'hasil_ujian', `${code}_${studentData.nis}`);
-                const resSnap = await getDoc(resRef);
-
-                const cheatKey = `cheat_${code}_${studentData.nis}`;
-                
-                if(!resSnap.exists()) {
-                    // Skenario 1: Siswa baru pertama kali masuk
-                    cheatCount = 0; 
-                    localStorage.setItem(cheatKey, '0');
-                    
-                    await setDoc(resRef, {
-                        nis: studentData.nis, nama: studentData.nama, kelas: studentData.kelas,
-                        ujianId: examData.kodeUjian, status: 'mengerjakan', pelanggaran: 0,
-                        skor: 0, lastHeartbeat: serverTimestamp(), mulaiPada: serverTimestamp(), userAgent: navigator.userAgent
-                    });
-                } else {
-                    // Skenario 2: Siswa sudah pernah masuk (Resume atau Ulang)
-                    const rData = resSnap.data();
-                    
-                    // PERBAIKAN LOGIKA:
-                    // Defaultnya adalah TRUE (Dibatasi/Terkunci) jika setting tidak ada/undefined demi keamanan.
-                    // Siswa hanya boleh masuk lagi jika 'settingBatasiSatuKali' secara eksplisit bernilai FALSE (tidak dicentang di Admin).
-                    const isRestricted = examData.settingBatasiSatuKali !== false; 
-
-                    // Jika dibatasi DAN status ujian sebelumnya sudah selesai/suspended -> TOLAK
-                    if(isRestricted && (rData.status === 'selesai' || rData.status === 'suspended')) {
-                        monitorResult(`${code}_${studentData.nis}`, code);
-                        showLoading(false);
-                        // Tampilkan pesan peringatan kecil (opsional, tapi langsung redirect ke hasil)
-                        return;
-                    }
-                    
-                    // Jika lolos pengecekan (resume atau diizinkan ulang), lanjutkan
-                    cheatCount = rData.pelanggaran || 0;
-                    localStorage.setItem(cheatKey, cheatCount);
-                    await updateDoc(resRef, { status: 'mengerjakan', lastHeartbeat: serverTimestamp() });
-                }
-
-                if (cheatCount > getCheatLimit()) {
-                    showLoading(false);
-                    document.getElementById('lock-modal').classList.remove('hidden');
-                    document.getElementById('lock-modal').classList.add('flex');
-                    document.getElementById('screen-token').classList.add('hidden');
-                    return;
-                }
-
-                const promises = examData.daftarIdSoal.map(id => getDoc(doc(db, 'bank_soal', id)));
-                const qSnaps = await Promise.all(promises);
-                
-                questions = qSnaps.filter(s=>s.exists()).map(s => {
-                    const d = s.data();
-                    const ops = d.opsi ? d.opsi.map((o, i) => ({ ...o, originalIndex: i })) : [];
-                    return { id: s.id, ...d, opsi: ops };
-                });
-
-                const localStateKey = `exam_${code}_${studentData.nis}`;
-                const orderKey = `order_${code}_${studentData.nis}`; 
-                const savedOrderStr = localStorage.getItem(orderKey);
-
-                if(!resSnap.exists()) {
-                    if(!localStorage.getItem(localStateKey)) localStorage.removeItem(orderKey);
-                }
-
-                let finalQuestions = [];
-                if (savedOrderStr) {
-                    const savedOrder = JSON.parse(savedOrderStr);
-                    savedOrder.forEach(id => {
-                        const q = questions.find(item => item.id === id);
-                        if(q) finalQuestions.push(q);
-                    });
-                    if(finalQuestions.length !== questions.length) {
-                        const loadedIds = new Set(finalQuestions.map(q => q.id));
-                        questions.forEach(q => { if(!loadedIds.has(q.id)) finalQuestions.push(q); });
-                    }
-                } else {
-                    finalQuestions = [...questions];
-                    if(examData.settingAcakSoal) {
-                        finalQuestions = smartShuffle(finalQuestions);
-                    }
-                    const newOrder = finalQuestions.map(q => q.id);
-                    localStorage.setItem(orderKey, JSON.stringify(newOrder));
-                }
-                questions = finalQuestions;
-
-                if(examData.settingAcakOpsi) {
-                    questions.forEach(q => {
-                        if(q.type === 'pg' || q.type === 'pgk') shuffleArray(q.opsi);
-                    });
-                }
-
-                const savedState = localStorage.getItem(localStateKey);
-                answers = savedState ? JSON.parse(savedState) : new Array(questions.length).fill(null).map(() => ({ val: null, ragu: false }));
-                if(answers.length !== questions.length) answers = new Array(questions.length).fill(null).map(() => ({ val: null, ragu: false }));
-
-                const timerKey = `end_time_${code}_${studentData.nis}`;
-                let savedTime = localStorage.getItem(timerKey);
-                if(!savedTime) {
-                    savedTime = Date.now() + (examData.durasiMenit * 60000);
-                    localStorage.setItem(timerKey, savedTime);
-                }
-                examEndTime = parseInt(savedTime);
-
-                document.getElementById('header-exam-name').textContent = examData.namaUjian;
-                document.getElementById('header-student-name').textContent = studentData.nama;
-                document.getElementById('exam-header').classList.remove('hidden');
-                document.getElementById('exam-header').classList.add('flex');
-                
-                renderNav();
-                loadQuestion(0);
-                startSyncTimer();
-                switchScreen('screen-exam');
-
-            } catch(e) { alert(e.message); }
-            showLoading(false);
+            // Prefer back camera
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
+            .catch(err => {
+                console.error(err);
+                alert("Gagal akses kamera. Pastikan izin diberikan atau gunakan Token Manual.");
+                window.closeScanner();
+            });
         };
 
-        const compressImage = (base64Str) => {
-            return new Promise((resolve) => {
-                const img = new Image(); img.src = base64Str;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let w = img.width, h = img.height;
-                    if(w > 800) { h *= 800/w; w = 800; }
-                    canvas.width = w; canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    resolve(canvas.toDataURL('image/jpeg', 0.6));
+        window.closeScanner = () => {
+            if(html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    document.getElementById('scanner-modal').classList.add('hidden');
+                    document.getElementById('scanner-modal').classList.remove('flex');
+                }).catch(err => console.log(err));
+            } else {
+                document.getElementById('scanner-modal').classList.add('hidden');
+                document.getElementById('scanner-modal').classList.remove('flex');
+            }
+        };
+
+        async function onScanSuccess(decodedText) {
+            html5QrCode.pause();
+            document.getElementById('scan-status').textContent = "Memproses...";
+            try {
+                const data = JSON.parse(decodedText);
+                if (data.c !== currentUserData.kelas) throw new Error(`QR Kelas Salah (${data.c})`);
+                
+                await processAttendance(data.t, 'qr');
+            } catch (e) {
+                alert("QR Invalid: " + e.message);
+                setTimeout(() => html5QrCode.resume(), 2000);
+            }
+        }
+
+        function onScanFailure(error) {}
+
+        // --- MANUAL TOKEN LOGIC (NEW) ---
+        window.openManualInput = () => {
+            document.getElementById('token-modal').classList.remove('hidden');
+            document.getElementById('token-modal').classList.add('flex');
+            document.getElementById('manual-token-input').value = '';
+            document.getElementById('manual-token-input').focus();
+        };
+
+        window.closeManualInput = () => {
+            document.getElementById('token-modal').classList.add('hidden');
+            document.getElementById('token-modal').classList.remove('flex');
+        };
+
+        window.submitManualToken = async () => {
+            const token = document.getElementById('manual-token-input').value.toUpperCase();
+            if (token.length < 4) return alert("Token minimal 4 karakter");
+            
+            window.closeManualInput();
+            await processAttendance(token, 'manual');
+        };
+
+        // CORE ATTENDANCE PROCESSOR
+        async function processAttendance(token, method) {
+            const docRef = doc(db, 'presensi', todayDocId);
+            const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            try {
+                const updateData = {};
+                updateData[currentUserData.id] = {
+                    status: 'h', 
+                    time: timeStr,
+                    method: method,
+                    token: token,
+                    timestamp: serverTimestamp() // Secure Server Time
                 };
-                img.onerror = () => resolve(base64Str);
-            });
-        };
 
-        window.loadQuestion = (idx) => {
-            currentIndex = idx;
-            const q = questions[idx];
-            document.getElementById('q-number').textContent = idx + 1;
-            document.getElementById('q-type-badge').textContent = q.type.toUpperCase();
-            
-            // Set Font Size on Load
-            const containerQ = document.getElementById('q-content');
-            const containerO = document.getElementById('q-options');
-            containerQ.style.fontSize = `${currentFontSize}%`;
-            containerO.style.fontSize = `${currentFontSize}%`;
-
-            let html = '';
-            if(q.audio) html += `<audio controls src="${q.audio}" class="w-full mb-4"></audio>`;
-            html += `<div class="soal-text" style="font-size: 100%">${q.naskah}</div>`;
-            if(q.naskahImage) html += `<img src="${q.naskahImage}" class="mt-2 rounded border">`;
-            if(q.naskahBawah) html += `<div class="soal-text mt-2" style="font-size: 100%">${q.naskahBawah}</div>`;
-
-            containerQ.innerHTML = html;
-            containerO.innerHTML = '';
-            
-            const ans = answers[idx];
-            const savedVal = ans.val;
-
-            if(q.type === 'pg') {
-                q.opsi.forEach((o, i) => {
-                    const isSel = savedVal == o.originalIndex;
-                    const div = document.createElement('div');
-                    div.className = `flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all duration-200 group ${isSel ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : 'border-slate-700 bg-slate-800/30 hover:bg-slate-800 hover:border-slate-500'}`;
-                    div.onclick = () => saveAns(o.originalIndex);
-                    div.innerHTML = `<div class="w-10 h-10 rounded-xl border flex items-center justify-center font-bold text-sm transition-colors ${isSel ? 'bg-primary text-slate-900 border-primary' : 'bg-slate-800 border-slate-600 text-slate-400 group-hover:text-white'}">${String.fromCharCode(65+i)}</div><div class="flex-1 text-slate-300 font-medium leading-relaxed group-hover:text-white transition-colors">${o.text}${o.imageBase64 ? `<br><img src="${o.imageBase64}" class="mt-2 h-24 rounded-lg border border-white/10">` : ''}</div>`;
-                    containerO.appendChild(div);
-                });
-            } else if(q.type === 'bs') {
-                // FIX: Menambahkan overflow-x-auto agar tabel bisa digeser
-                let t = `<div class="border border-slate-700 rounded-2xl overflow-x-auto"><table class="w-full text-sm min-w-[400px]"><thead class="bg-slate-800 text-slate-300 font-bold border-b border-slate-700"><tr><th class="p-4 text-left">Pernyataan</th><th class="p-4 w-16 text-center">B</th><th class="p-4 w-16 text-center">S</th></tr></thead><tbody class="divide-y divide-slate-700">`;
-                q.opsi.forEach((o, i) => {
-                    const tIdx = o.originalIndex !== undefined ? o.originalIndex : i;
-                    const val = savedVal ? savedVal[tIdx] : null;
-                    t += `<tr class="hover:bg-slate-800/50 transition-colors"><td class="p-4 text-slate-300">${o.text}</td><td class="p-4 text-center"><input type="radio" name="bs_${i}" class="w-5 h-5 accent-emerald-500" ${val==='true'?'checked':''} onchange="saveBsAns(${tIdx}, 'true')"></td><td class="p-4 text-center"><input type="radio" name="bs_${i}" class="w-5 h-5 accent-red-500" ${val==='false'?'checked':''} onchange="saveBsAns(${tIdx}, 'false')"></td></tr>`;
-                });
-                containerO.innerHTML = t + `</tbody></table></div>`;
-            } else if(q.type === 'pgk') {
-                const sel = Array.isArray(savedVal) ? savedVal : [];
-                q.opsi.forEach((o, i) => {
-                    const tIdx = o.originalIndex;
-                    const isSel = sel.includes(tIdx);
-                    const div = document.createElement('div');
-                    div.className = `flex items-center gap-4 p-4 border rounded-2xl cursor-pointer transition-all ${isSel ? 'border-primary bg-primary/10 shadow-[0_0_15px_rgba(56,189,248,0.2)]' : 'border-slate-700 bg-slate-800/30 hover:bg-slate-800'}`;
-                    div.onclick = () => {
-                        let n = [...sel]; if(n.includes(tIdx)) n = n.filter(x=>x!==tIdx); else n.push(tIdx); saveAns(n);
-                    };
-                    div.innerHTML = `<div class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-all ${isSel ? 'bg-primary border-primary' : 'border-slate-500'}">${isSel ? '<svg class="w-4 h-4 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>' : ''}</div><div class="flex-1 text-slate-300 font-medium">${o.text}</div>`;
-                    containerO.appendChild(div);
-                });
-            } else {
-                const ta = document.createElement('textarea');
-                ta.className = "glow-input w-full p-5 rounded-2xl h-40 text-base leading-relaxed";
-                ta.placeholder = "Ketik jawaban...";
-                ta.value = savedVal || '';
-                ta.oninput = (e) => saveAns(e.target.value);
-                containerO.appendChild(ta);
-
-                if(q.type === 'esai-kompleks') {
-                    const camDiv = document.createElement('div');
-                    camDiv.className = "mt-6 pt-6 border-t border-white/10";
-                    const uid = `cam-${idx}`;
-                    camDiv.innerHTML = `<label for="${uid}" class="cursor-pointer px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-white text-sm font-bold flex items-center gap-2 w-max transition-all shadow-lg" onclick="window.isUploading=true"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg> Foto Jawaban</label><input type="file" id="${uid}" accept="image/*" class="hidden" capture="environment">
-                    <div id="preview-${idx}" class="${ans.image ? 'mt-4' : 'mt-4 hidden'}">${ans.image ? `<div class="relative inline-block group"><img src="${ans.image}" class="h-40 rounded-xl border border-white/20 shadow-lg"><button onclick="delImg(${idx})" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>` : ''}</div>`;
-                    containerO.appendChild(camDiv);
-                    setTimeout(() => {
-                        const fi = document.getElementById(uid);
-                        if(fi) fi.onchange = async (e) => {
-                            if(e.target.files[0]) {
-                                const base64 = await new Promise(r=>{ const fr=new FileReader(); fr.onload=x=>r(x.target.result); fr.readAsDataURL(e.target.files[0]); });
-                                const comp = await compressImage(base64);
-                                saveImg(idx, comp);
-                                document.getElementById(`preview-${idx}`).innerHTML = `<div class="relative inline-block group"><img src="${comp}" class="h-40 rounded-xl border border-white/20 shadow-lg"><button onclick="delImg(${idx})" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>`;
-                                document.getElementById(`preview-${idx}`).classList.remove('hidden');
-                                window.isUploading = false;
-                            } else window.isUploading = false;
-                        };
-                    }, 100);
-                }
-            }
-
-            if(window.MathJax) MathJax.typesetPromise([document.getElementById('q-content'), containerO]);
-            
-            document.getElementById('btn-prev').disabled = idx === 0;
-            if(idx === questions.length - 1) {
-                document.getElementById('btn-next').classList.add('hidden');
-                document.getElementById('btn-finish').classList.remove('hidden');
-            } else {
-                document.getElementById('btn-next').classList.remove('hidden');
-                document.getElementById('btn-finish').classList.add('hidden');
-            }
-            document.getElementById('check-ragu').checked = answers[idx].ragu;
-            updateNavStyle();
-        };
-
-        window.saveAns = (v) => { 
-            answers[currentIndex].val = v; persist(); updateNavStyle();
-            if(questions[currentIndex].type !== 'esai-singkat' && questions[currentIndex].type !== 'esai-kompleks') loadQuestion(currentIndex);
-        };
-        window.saveBsAns = (r, v) => { let d = answers[currentIndex].val || {}; d[r] = v; saveAns(d); };
-        window.saveImg = (idx, b64) => { answers[idx].image = b64; persist(); };
-        window.delImg = (idx) => { delete answers[idx].image; persist(); loadQuestion(idx); };
-        
-        function persist() {
-            localStorage.setItem(`exam_${examData.kodeUjian}_${studentData.nis}`, JSON.stringify(answers));
-            const s = document.getElementById('save-status'); s.style.opacity = 1; setTimeout(()=>s.style.opacity=0, 1000);
-        }
-
-        window.prevQ = () => loadQuestion(currentIndex - 1);
-        window.nextQ = () => loadQuestion(currentIndex + 1);
-        document.getElementById('check-ragu').onchange = (e) => { answers[currentIndex].ragu = e.target.checked; persist(); updateNavStyle(); };
-
-        function renderNav() {
-            const makeBtn = (i, idPrefix) => {
-                const b = document.createElement('button');
-                b.id = `${idPrefix}${i}`;
-                b.textContent = i + 1;
-                b.className = "nav-grid-btn w-full aspect-square rounded-xl flex items-center justify-center text-xs font-bold";
-                b.onclick = () => { loadQuestion(i); if(idPrefix==='nav-m-') toggleMobileNav(); };
-                return b;
-            };
-            ['nav-grid', 'mobile-nav-grid'].forEach((id, isM) => {
-                const el = document.getElementById(id); el.innerHTML = '';
-                questions.forEach((_, i) => el.appendChild(makeBtn(i, isM ? 'nav-m-' : 'nav-d-')));
-            });
-        }
-
-        function updateNavStyle() {
-            questions.forEach((_, i) => {
-                ['nav-d-', 'nav-m-'].forEach(p => {
-                    const b = document.getElementById(p + i);
-                    if(b) {
-                        const a = answers[i];
-                        // FIX: Check for null explicitly to allow index 0 (Answer A)
-                        const has = (a.val !== null && a.val !== undefined && a.val !== '' && (typeof a.val !== 'object' || Object.keys(a.val).length > 0)) || (a.image && a.image.length > 0);
-                        b.className = "nav-grid-btn w-full aspect-square rounded-xl flex items-center justify-center text-xs font-bold transition-all " + 
-                            (i === currentIndex ? 'active' : (a.ragu ? 'flag' : (has ? 'done' : '')));
-                    }
-                });
-            });
-        }
-
-        function startSyncTimer() {
-            const el = document.getElementById('timer-display');
-            timerInterval = setInterval(() => {
-                const d = Math.floor((examEndTime - Date.now())/1000);
-                if(d <= 0) { clearInterval(timerInterval); finishExam(); return; }
-                const h=Math.floor(d/3600).toString().padStart(2,'0'), m=Math.floor((d%3600)/60).toString().padStart(2,'0'), s=(d%60).toString().padStart(2,'0');
-                el.textContent = `${h}:${m}:${s}`;
-                if(d<60) el.classList.add('text-danger', 'animate-pulse');
-            }, 1000);
-        }
-
-        window.showSummary = () => {
-            const done = answers.filter(a => (a.val !== null && a.val !== undefined && a.val !== '' && (typeof a.val !== 'object' || Object.keys(a.val).length > 0)) || (a.image && a.image.length > 0)).length;
-            document.getElementById('sum-answered').textContent = done;
-            document.getElementById('sum-ragu').textContent = answers.filter(a=>a.ragu).length;
-            document.getElementById('sum-empty').textContent = questions.length - done;
-            
-            const g = document.getElementById('summary-grid'); g.innerHTML = '';
-            questions.forEach((_, i) => {
-                const b = document.createElement('button'); b.textContent = i+1;
-                const a = answers[i];
-                const has = (a.val !== null && a.val !== undefined && a.val !== '' && (typeof a.val !== 'object' || Object.keys(a.val).length > 0)) || (a.image && a.image.length > 0);
-                b.className = `w-full aspect-square rounded-xl flex items-center justify-center text-xs font-bold text-white transition-all ${a.ragu ? 'bg-warning text-black' : (has ? 'bg-success' : 'bg-slate-700')}`;
-                b.onclick = () => { closeSummary(); loadQuestion(i); };
-                g.appendChild(b);
-            });
-            document.getElementById('summary-modal').classList.remove('hidden');
-            document.getElementById('summary-modal').classList.add('flex');
-        };
-        
-        window.closeSummary = () => { document.getElementById('summary-modal').classList.add('hidden'); document.getElementById('summary-modal').classList.remove('flex'); };
-        window.confirmFinish = () => { closeSummary(); finishExam(); };
-        window.toggleMobileNav = () => {
-            const el = document.getElementById('mobile-nav-overlay');
-            el.classList.toggle('hidden'); el.classList.toggle('flex');
-        };
-
-        window.finishExam = async () => {
-            clearInterval(timerInterval); isSubmitting = true; showLoading(true);
-            try { if(document.fullscreenElement) await document.exitFullscreen().catch(e=>{}); } catch(e){}
-
-            const finalDetails = questions.map((q, i) => ({ id: q.id, answer: answers[i] }));
-            const payload = {
-                nis: studentData.nis, nama: studentData.nama, kelas: studentData.kelas,
-                ujianId: examData.kodeUjian,
-                jawabanDetail: finalDetails, jawabanSiswa: answers, 
-                status: 'selesai', skor: 0, pelanggaran: cheatCount, selesaiPada: serverTimestamp(), userAgent: navigator.userAgent
-            };
-            await submitToServer(payload);
-        };
-
-        async function submitToServer(payload) {
-            try {
-                const resRef = doc(db, 'hasil_ujian', `${examData.kodeUjian}_${studentData.nis}`);
-                await setDoc(resRef, payload, { merge: true });
+                await setDoc(docRef, updateData, { merge: true });
                 
-                try {
-                    const mapAns = {};
-                    payload.jawabanDetail.forEach(x => mapAns[x.id] = x.answer.val);
-                    const keys = await Promise.all(examData.daftarIdSoal.map(id => getDoc(doc(db, 'bank_soal_privat', id))));
-                    let score = 0, max = 0;
-
-                    keys.forEach((k, i) => {
-                        const qId = examData.daftarIdSoal[i];
-                        const bobot = parseInt(examData.kustomisasiBobot?.[qId] || 1);
-                        if(k.exists()) {
-                            const kd = k.data();
-                            const ans = mapAns[qId];
-                            max += bobot;
-                            
-                            let ok = false;
-                            const sAns = (ans || '').toString().trim().toLowerCase();
-                            const sKey = (kd.kunci || '').toString().trim().toLowerCase();
-
-                            if(kd.tipe === 'pg' && ans == kd.kunci) ok = true;
-                            else if(kd.tipe === 'esai-singkat' && sAns === sKey && sKey !== '') ok = true;
-                            else if(kd.tipe === 'pgk' && Array.isArray(ans) && Array.isArray(kd.kunci) && ans.sort().toString() === kd.kunci.sort().toString()) ok = true;
-                            else if(kd.tipe === 'bs') {
-                                let m = 0, tot = kd.kunci.length;
-                                for(let j=0; j<tot; j++) if(String(ans?.[j]) === String(kd.kunci[j])) m++;
-                                score += (m/tot)*bobot; return;
-                            }
-                            if(ok) score += bobot;
-                        } else max += bobot;
-                    });
-
-                    const final = max > 0 ? (score/max)*100 : 0;
-                    await updateDoc(resRef, { skor: parseFloat(final.toFixed(2)) });
-
-                } catch(e) { console.log(e); }
-
-                localStorage.removeItem(`exam_${examData.kodeUjian}_${studentData.nis}`);
-                localStorage.removeItem(`end_time_${examData.kodeUjian}_${studentData.nis}`);
-                localStorage.removeItem(`order_${examData.kodeUjian}_${studentData.nis}`);
-                localStorage.removeItem(`cheat_${examData.kodeUjian}_${studentData.nis}`);
-
-                monitorResult(`${examData.kodeUjian}_${studentData.nis}`, examData.kodeUjian);
-
-            } catch(e) { alert('Gagal kirim: '+e.message); monitorResult(`${examData.kodeUjian}_${studentData.nis}`, examData.kodeUjian); }
-            showLoading(false);
+                alert(`✅ Presensi Berhasil! (${method === 'qr' ? 'Scan QR' : 'Token Manual'})`);
+                if(method === 'qr') window.closeScanner();
+                
+            } catch (e) {
+                alert("Gagal memproses presensi: " + e.message);
+                if(method === 'qr') html5QrCode.resume();
+            }
         }
 
-        function monitorResult(rid, eid) {
-            if(resultListener) resultListener(); if(examListener) examListener();
-            document.getElementById('exam-header').classList.add('hidden');
-            switchScreen('screen-result');
-            const scoreBox = document.getElementById('score-box');
-            const waitBox = document.getElementById('waiting-box');
+        // --- PERMISSION LOGIC ---
+        window.submitPermission = async () => {
+            const type = document.querySelector('input[name="perm-type"]:checked').value;
+            const reason = document.getElementById('perm-reason').value.trim();
+            const fileInput = document.getElementById('perm-file');
             
-            resultListener = onSnapshot(doc(db, 'hasil_ujian', rid), s => {
-                if(s.exists()) document.getElementById('final-score').textContent = Math.round(s.data().skor||0);
-            });
-            examListener = onSnapshot(doc(db, 'ujian_terjadwal', eid), s => {
-                if(s.exists()) {
-                    if(s.data().settingTampilNilai) { 
-                        waitBox.classList.add('hidden'); 
-                        scoreBox.classList.remove('hidden'); 
-                    } else { 
-                        scoreBox.classList.add('hidden'); 
-                        waitBox.classList.remove('hidden'); 
-                    }
-                }
+            if(!reason) { alert("Isi alasan!"); return; }
+            
+            const btn = document.getElementById('btn-perm-top');
+            const originalText = btn.innerHTML;
+            btn.disabled = true; btn.innerText = "Mengirim...";
+
+            try {
+                let base64Image = "";
+                if(fileInput.files.length > 0) base64Image = await compressImage(fileInput.files[0]);
+
+                const today = getTodayString();
+                const proofId = `${currentUserData.id}_${today}`;
+                
+                await setDoc(doc(db, 'bukti_izin', proofId), {
+                    nama: currentUserData.nama,
+                    nis: currentUserData.id,
+                    kelas: currentUserData.kelas,
+                    tanggal: today,
+                    tipe: type,
+                    alasan: reason,
+                    foto: base64Image
+                });
+
+                // Update presensi juga
+                const docRef = doc(db, 'presensi', todayDocId);
+                const updateData = {};
+                updateData[currentUserData.id] = { 
+                    status: type, 
+                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }), 
+                    method: 'izin_app',
+                    buktiAda: true 
+                };
+                await setDoc(docRef, updateData, { merge: true });
+
+                alert("Izin Berhasil Dikirim.");
+                window.switchPage('home');
+                checkTodayStatus(); 
+
+            } catch(e) { alert("Gagal: " + e.message); } 
+            finally { btn.disabled = false; btn.innerHTML = originalText; }
+        };
+
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        const maxWidth = 500; 
+                        const scale = maxWidth / img.width;
+                        canvas.width = maxWidth;
+                        canvas.height = img.height * scale;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                };
+                reader.readAsDataURL(file);
             });
         }
 
-        function switchScreen(id) {
-            ['screen-login', 'screen-token', 'screen-exam', 'screen-result'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
-        }
-        function showLoading(show) { document.getElementById('loading-overlay').classList.toggle('hidden', !show); }
+        // --- NAVIGATION & UJIAN ---
+        window.switchPage = (pageId) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navBtns = document.querySelectorAll('.nav-item');
+            if(pageId === 'home') navBtns[0].classList.add('active');
+            else if(pageId === 'profile') navBtns[1].classList.add('active');
+        };
+
     </script>
 </body>
 </html>
