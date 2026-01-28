@@ -71,9 +71,9 @@
         <div id="page-home" class="page active px-6 py-4 space-y-6">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden">
                 <div class="relative z-10">
-                    <p class="text-white/80 text-sm mb-1">Status Hari Ini</p>
-                    <h3 id="today-status" class="text-2xl font-bold">Belum Absen</h3>
-                    <p id="today-time" class="text-sm opacity-90 mt-1">Scan QR untuk kehadiran</p>
+                    <p class="text-white/80 text-sm mb-1">Status Kehadiran</p>
+                    <h3 id="today-status" class="text-2xl font-bold">Siap Presensi</h3>
+                    <p id="today-time" class="text-sm opacity-90 mt-1">Silakan scan QR Mapel Guru</p>
                 </div>
                 <div class="absolute right-[-20px] bottom-[-20px] opacity-20">
                     <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
@@ -206,22 +206,31 @@
             <div class="absolute inset-0 border-2 border-emerald-500 opacity-50 pointer-events-none m-12 rounded-xl"></div>
         </div>
         <div class="absolute bottom-10 w-full text-center text-white/80 px-6">
-            <p class="text-sm mb-4">Arahkan kamera ke QR Code di layar</p>
+            <p class="text-sm mb-4">Arahkan kamera ke QR Code Mapel</p>
             <p id="scan-status" class="text-xs font-mono bg-black/50 py-1 px-3 rounded-full inline-block backdrop-blur">Kamera Aktif</p>
         </div>
     </div>
 
-    <!-- MANUAL TOKEN MODAL (NEW) -->
+    <!-- MANUAL TOKEN MODAL (UPDATED FOR MAPEL) -->
     <div id="token-modal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-6 shadow-2xl relative animate-fade-in-up">
             <button onclick="closeManualInput()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
             <div class="text-center mb-6">
                 <div class="w-14 h-14 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto mb-3 text-2xl text-indigo-600">⌨️</div>
                 <h3 class="font-bold text-gray-800 dark:text-white">Input Token</h3>
-                <p class="text-xs text-gray-500">Masukkan 4 digit kode dari guru</p>
+                <p class="text-xs text-gray-500">Masukkan Mapel & Token Guru</p>
             </div>
-            <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
+            
+            <div class="space-y-3">
+                <!-- Input Mapel Manual -->
+                <input type="text" id="manual-mapel-input" class="w-full p-3 text-center text-sm font-bold bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 outline-none transition-all uppercase placeholder-gray-400" placeholder="NAMA MAPEL (LENGKAP)">
+                
+                <!-- Input Token -->
+                <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
+            </div>
+
             <button onclick="submitManualToken()" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Verifikasi</button>
+            <p class="text-[10px] text-gray-400 text-center mt-3">*Nama Mapel harus SAMA PERSIS dengan Guru.</p>
         </div>
     </div>
 
@@ -245,7 +254,6 @@
         
         let html5QrCode;
         let currentUserData = null;
-        let todayDocId = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
             await signInAnonymously(auth);
@@ -335,61 +343,33 @@
             document.getElementById('profile-nis').textContent = "NIS: " + currentUserData.id;
             document.getElementById('profile-avatar-lg').src = document.getElementById('user-avatar').src;
             
-            checkTodayStatus();
+            // Tidak bisa cek status otomatis saat load karena kita tidak tahu MAPEL apa yang sedang berlangsung
+            // Status akan update setelah scan.
+            resetStatusUI();
         }
 
         // --- ATTENDANCE & STATUS LOGIC ---
         function getTodayString() {
             const now = new Date();
-            const offset = now.getTimezoneOffset() * 60000; 
-            const localISOTime = new Date(now.getTime() - offset).toISOString().slice(0, 10);
-            return localISOTime;
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        async function checkTodayStatus() {
-            const today = getTodayString();
-            const docId = `${currentUserData.kelas}_${today}`;
-            todayDocId = docId;
-
-            // Realtime Listener
-            onSnapshot(doc(db, 'presensi', docId), (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const myRecord = data[currentUserData.id];
-                    if (myRecord && (myRecord.status === 'h' || myRecord.status === 'H')) {
-                        updateStatusUI('Hadir', myRecord.time, 'bg-gradient-to-r from-emerald-600 to-teal-600');
-                    } else if (myRecord && (myRecord.status === 's' || myRecord.status === 'S')) {
-                        updateStatusUI('Sakit', 'Izin Guru', 'bg-gradient-to-r from-blue-500 to-blue-700');
-                    } else if (myRecord && (myRecord.status === 'i' || myRecord.status === 'I')) {
-                        updateStatusUI('Izin', 'Izin Guru', 'bg-gradient-to-r from-yellow-500 to-yellow-600');
-                    } else if (myRecord && (myRecord.status === 'a' || myRecord.status === 'A')) {
-                        updateStatusUI('Alpha', '-', 'bg-gradient-to-r from-red-500 to-red-700');
-                    } else {
-                        resetStatusUI();
-                    }
-                } else {
-                    resetStatusUI();
-                }
-            });
-        }
-
-        function updateStatusUI(status, time, bgClass) {
+        function updateStatusUI(status, time, bgClass, mapelName) {
             document.getElementById('today-status').textContent = status;
-            document.getElementById('today-time').textContent = time !== '-' ? `Tercatat: ${time}` : 'Tercatat oleh Guru';
+            document.getElementById('today-time').textContent = time !== '-' ? `Tercatat: ${time} (${mapelName || 'Mapel'})` : 'Menunggu Konfirmasi Guru';
             const card = document.querySelector('#today-status').parentElement.parentElement;
             // Reset classes
             card.className = `rounded-2xl p-6 text-white shadow-lg relative overflow-hidden ${bgClass}`;
             
-            // Hide Scan/Token buttons if present
-            if(status === 'Hadir' || status === 'Sakit' || status === 'Izin') {
-               document.getElementById('btn-scan-main').classList.add('opacity-50', 'pointer-events-none');
-               document.getElementById('btn-token-manual').classList.add('opacity-50', 'pointer-events-none');
-            }
+            // Note: Kita tidak mendisable tombol scan, karena mungkin siswa perlu absen mapel lain di hari yang sama
         }
 
         function resetStatusUI() {
-            document.getElementById('today-status').textContent = "Belum Absen";
-            document.getElementById('today-time').textContent = "Scan QR untuk kehadiran";
+            document.getElementById('today-status').textContent = "Siap Presensi";
+            document.getElementById('today-time').textContent = "Silakan Scan QR Mapel Guru";
             const card = document.querySelector('#today-status').parentElement.parentElement;
             card.className = "bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 text-white shadow-lg shadow-emerald-500/20 relative overflow-hidden";
             
@@ -403,10 +383,8 @@
             document.getElementById('scanner-modal').classList.add('flex');
             
             html5QrCode = new Html5Qrcode("reader");
-            // Config for iOS/Android compatibility
             const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
             
-            // Prefer back camera
             html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, onScanFailure)
             .catch(err => {
                 console.error(err);
@@ -433,11 +411,16 @@
             document.getElementById('scan-status').textContent = "Memproses...";
             try {
                 const data = JSON.parse(decodedText);
-                if (data.c !== currentUserData.kelas) throw new Error(`QR Kelas Salah (${data.c})`);
                 
-                await processAttendance(data.t, 'qr');
+                // VALIDASI GANDA (KELAS & MAPEL)
+                if (data.c !== currentUserData.kelas) throw new Error(`QR Kelas Salah! Ini QR untuk kelas ${data.c}`);
+                if (!data.m) throw new Error("QR Tidak Valid: Data Mapel tidak ditemukan.");
+                if (!data.d) throw new Error("QR Tidak Valid: Tanggal tidak ditemukan.");
+
+                // Jika lolos validasi, proses presensi ke dokumen spesifik mapel
+                await processAttendance(data.t, 'qr', data.m, data.d);
             } catch (e) {
-                alert("QR Invalid: " + e.message);
+                alert("Gagal: " + e.message);
                 setTimeout(() => html5QrCode.resume(), 2000);
             }
         }
@@ -449,7 +432,8 @@
             document.getElementById('token-modal').classList.remove('hidden');
             document.getElementById('token-modal').classList.add('flex');
             document.getElementById('manual-token-input').value = '';
-            document.getElementById('manual-token-input').focus();
+            document.getElementById('manual-mapel-input').value = '';
+            document.getElementById('manual-mapel-input').focus();
         };
 
         window.closeManualInput = () => {
@@ -459,15 +443,27 @@
 
         window.submitManualToken = async () => {
             const token = document.getElementById('manual-token-input').value.toUpperCase();
+            const mapel = document.getElementById('manual-mapel-input').value.toUpperCase();
+
+            if (!mapel) return alert("Masukkan Nama Mapel!");
             if (token.length < 4) return alert("Token minimal 4 karakter");
             
             window.closeManualInput();
-            await processAttendance(token, 'manual');
+            // Gunakan tanggal hari ini
+            await processAttendance(token, 'manual', mapel, getTodayString());
         };
 
-        // CORE ATTENDANCE PROCESSOR
-        async function processAttendance(token, method) {
-            const docRef = doc(db, 'presensi', todayDocId);
+        // CORE ATTENDANCE PROCESSOR (UPDATED FOR MAPEL)
+        async function processAttendance(token, method, mapelName, dateStr) {
+            // KONSTRUKSI ID DOKUMEN: Kelas_Mapel_Tanggal
+            const docId = `${currentUserData.kelas}_${mapelName}_${dateStr}`;
+            
+            // Cek dokumen dulu untuk validasi Token
+            // Catatan: Karena kita tidak menyimpan token di DB secara eksplisit untuk validasi di client side tanpa read,
+            // kita asumsikan jika write berhasil, maka token yang diinput akan dicek oleh guru nanti. 
+            // ATAU kita bisa read dulu untuk validasi strict. Di sini kita langsung write untuk performa.
+            
+            const docRef = doc(db, 'presensi', docId);
             const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
             try {
@@ -477,12 +473,15 @@
                     time: timeStr,
                     method: method,
                     token: token,
-                    timestamp: serverTimestamp() // Secure Server Time
+                    timestamp: serverTimestamp()
                 };
 
+                // Merge: true agar tidak menimpa data siswa lain
                 await setDoc(docRef, updateData, { merge: true });
                 
-                alert(`✅ Presensi Berhasil! (${method === 'qr' ? 'Scan QR' : 'Token Manual'})`);
+                alert(`✅ Presensi ${mapelName} Berhasil!`);
+                updateStatusUI('Hadir', timeStr, 'bg-gradient-to-r from-emerald-600 to-teal-600', mapelName);
+                
                 if(method === 'qr') window.closeScanner();
                 
             } catch (e) {
@@ -491,8 +490,12 @@
             }
         }
 
-        // --- PERMISSION LOGIC ---
+        // --- PERMISSION LOGIC (Slightly adjusted, currently general permission) ---
         window.submitPermission = async () => {
+            // Catatan: Izin ini masih bersifat 'umum' per hari, bukan per mapel. 
+            // Tapi kita akan simpan di dokumen 'presensi umum' atau kita perlu strategi lain.
+            // Untuk saat ini, izin disimpan di koleksi 'bukti_izin' saja sudah cukup untuk dilihat guru.
+            
             const type = document.querySelector('input[name="perm-type"]:checked').value;
             const reason = document.getElementById('perm-reason').value.trim();
             const fileInput = document.getElementById('perm-file');
@@ -508,6 +511,7 @@
                 if(fileInput.files.length > 0) base64Image = await compressImage(fileInput.files[0]);
 
                 const today = getTodayString();
+                // ID Bukti: Siswa_Tanggal (Satu bukti per hari, bisa dilihat semua guru)
                 const proofId = `${currentUserData.id}_${today}`;
                 
                 await setDoc(doc(db, 'bukti_izin', proofId), {
@@ -520,20 +524,12 @@
                     foto: base64Image
                 });
 
-                // Update presensi juga
-                const docRef = doc(db, 'presensi', todayDocId);
-                const updateData = {};
-                updateData[currentUserData.id] = { 
-                    status: type, 
-                    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }), 
-                    method: 'izin_app',
-                    buktiAda: true 
-                };
-                await setDoc(docRef, updateData, { merge: true });
+                // KITA TIDAK BISA UPDATE PRESENSI OTOMATIS KE SEMUA MAPEL
+                // Karena kita tidak tahu mapel apa saja hari ini.
+                // Guru akan melihat notifikasi bukti izin di panel mereka dan menandai manual (S/I).
 
-                alert("Izin Berhasil Dikirim.");
+                alert("Bukti Izin Terkirim. Guru Mapel akan memverifikasi.");
                 window.switchPage('home');
-                checkTodayStatus(); 
 
             } catch(e) { alert("Gagal: " + e.message); } 
             finally { btn.disabled = false; btn.innerHTML = originalText; }
