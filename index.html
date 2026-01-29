@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <!-- MENU GRID (Updated: Scan, Token Manual, Izin) -->
+            <!-- MENU GRID -->
             <div class="grid grid-cols-2 gap-4">
                 <!-- Tombol Scan -->
                 <button id="btn-scan-main" onclick="window.openScanner()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-emerald-200 dark:hover:border-emerald-700 group">
@@ -90,7 +90,7 @@
                     <span class="font-bold text-sm text-gray-700 dark:text-gray-200">Scan Masuk</span>
                 </button>
 
-                <!-- Tombol Manual Token (Menggantikan Text Link) -->
+                <!-- Tombol Manual Token -->
                 <button id="btn-token-manual" onclick="window.openManualInput()" class="bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm flex flex-col items-center justify-center gap-3 active:scale-95 transition-transform border border-gray-100 dark:border-emerald-900 hover:border-purple-200 dark:hover:border-purple-700 group">
                     <div class="w-12 h-12 bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
@@ -117,7 +117,7 @@
 
         <!-- PAGE: PERMISSION -->
         <div id="page-permission" class="page px-6 py-4">
-            <!-- HEADER PERMISSION (Updated) -->
+            <!-- HEADER PERMISSION -->
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
                     <button onclick="window.switchPage('home')" class="p-2 bg-white dark:bg-cyber-800 rounded-full shadow-sm hover:bg-gray-50 dark:hover:bg-cyber-700 border border-gray-100 dark:border-emerald-900">
@@ -211,7 +211,7 @@
         </div>
     </div>
 
-    <!-- MANUAL TOKEN MODAL (UPDATED FOR MAPEL) -->
+    <!-- MANUAL TOKEN MODAL (UPDATED FOR MAPEL FIX) -->
     <div id="token-modal" class="fixed inset-0 z-[70] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-6">
         <div class="bg-white dark:bg-gray-900 w-full max-w-xs rounded-3xl p-6 shadow-2xl relative animate-fade-in-up">
             <button onclick="closeManualInput()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500">✕</button>
@@ -222,15 +222,15 @@
             </div>
             
             <div class="space-y-3">
-                <!-- Input Mapel Manual -->
-                <input type="text" id="manual-mapel-input" class="w-full p-3 text-center text-sm font-bold bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 outline-none transition-all uppercase placeholder-gray-400" placeholder="NAMA MAPEL (LENGKAP)">
+                <!-- Input Mapel Manual (FIX: REMOVED UPPERCASE ENFORCEMENT) -->
+                <input type="text" id="manual-mapel-input" class="w-full p-3 text-center text-sm font-bold bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 outline-none transition-all placeholder-gray-400" placeholder="Nama Mapel (Sesuai Guru)">
                 
                 <!-- Input Token -->
                 <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
             </div>
 
             <button onclick="submitManualToken()" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Verifikasi</button>
-            <p class="text-[10px] text-gray-400 text-center mt-3">*Nama Mapel harus SAMA PERSIS dengan Guru.</p>
+            <p class="text-[10px] text-gray-400 text-center mt-3">*Nama Mapel harus SAMA PERSIS (Besar/Kecil Huruf).</p>
         </div>
     </div>
 
@@ -279,12 +279,20 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             const todayIndo = new Date().toLocaleDateString('id-ID', options).toUpperCase();
             
-            // Check if element exists before setting text
             const headerDateEl = document.getElementById('header-date');
             if(headerDateEl) {
                 headerDateEl.innerText = todayIndo;
             }
         });
+
+        // TIME FIX UTILITY (WIB FORCE)
+        function getIndoDateString() {
+            const now = new Date();
+            const utcMs = now.getTime();
+            const wibOffset = 7 * 60 * 60 * 1000;
+            const wibDate = new Date(utcMs + wibOffset); 
+            return wibDate.toISOString().split('T')[0];
+        }
 
         // --- AUTH LOGIC ---
         window.doLogin = () => {
@@ -343,28 +351,14 @@
             document.getElementById('profile-nis').textContent = "NIS: " + currentUserData.id;
             document.getElementById('profile-avatar-lg').src = document.getElementById('user-avatar').src;
             
-            // Tidak bisa cek status otomatis saat load karena kita tidak tahu MAPEL apa yang sedang berlangsung
-            // Status akan update setelah scan.
             resetStatusUI();
-        }
-
-        // --- ATTENDANCE & STATUS LOGIC ---
-        function getTodayString() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
         }
 
         function updateStatusUI(status, time, bgClass, mapelName) {
             document.getElementById('today-status').textContent = status;
             document.getElementById('today-time').textContent = time !== '-' ? `Tercatat: ${time} (${mapelName || 'Mapel'})` : 'Menunggu Konfirmasi Guru';
             const card = document.querySelector('#today-status').parentElement.parentElement;
-            // Reset classes
             card.className = `rounded-2xl p-6 text-white shadow-lg relative overflow-hidden ${bgClass}`;
-            
-            // Note: Kita tidak mendisable tombol scan, karena mungkin siswa perlu absen mapel lain di hari yang sama
         }
 
         function resetStatusUI() {
@@ -413,11 +407,11 @@
                 const data = JSON.parse(decodedText);
                 
                 // VALIDASI GANDA (KELAS & MAPEL)
-                if (data.c !== currentUserData.kelas) throw new Error(`QR Kelas Salah! Ini QR untuk kelas ${data.c}`);
-                if (!data.m) throw new Error("QR Tidak Valid: Data Mapel tidak ditemukan.");
+                // FIX: Trim kelas untuk menghindari masalah spasi
+                if (data.c.trim() !== currentUserData.kelas.trim()) throw new Error(`QR Kelas Salah! Ini QR untuk kelas ${data.c}`);
+                if (!data.m) throw new Error("QR Tidak Valid: Data Mapel tidak ditemukan. Pastikan Guru menggunakan aplikasi terbaru.");
                 if (!data.d) throw new Error("QR Tidak Valid: Tanggal tidak ditemukan.");
 
-                // Jika lolos validasi, proses presensi ke dokumen spesifik mapel
                 await processAttendance(data.t, 'qr', data.m, data.d);
             } catch (e) {
                 alert("Gagal: " + e.message);
@@ -427,7 +421,7 @@
 
         function onScanFailure(error) {}
 
-        // --- MANUAL TOKEN LOGIC (NEW) ---
+        // --- MANUAL TOKEN LOGIC (FIXED) ---
         window.openManualInput = () => {
             document.getElementById('token-modal').classList.remove('hidden');
             document.getElementById('token-modal').classList.add('flex');
@@ -443,26 +437,28 @@
 
         window.submitManualToken = async () => {
             const token = document.getElementById('manual-token-input').value.toUpperCase();
-            const mapel = document.getElementById('manual-mapel-input').value.toUpperCase();
+            // FIX: Jangan di-uppercase, biarkan apa adanya agar cocok dengan database guru
+            const mapel = document.getElementById('manual-mapel-input').value;
 
             if (!mapel) return alert("Masukkan Nama Mapel!");
             if (token.length < 4) return alert("Token minimal 4 karakter");
             
             window.closeManualInput();
-            // Gunakan tanggal hari ini
-            await processAttendance(token, 'manual', mapel, getTodayString());
+            // Gunakan fungsi tanggal yang sudah diperbaiki (WIB Force)
+            await processAttendance(token, 'manual', mapel, getIndoDateString());
         };
 
         // CORE ATTENDANCE PROCESSOR (UPDATED FOR MAPEL)
         async function processAttendance(token, method, mapelName, dateStr) {
             // KONSTRUKSI ID DOKUMEN: Kelas_Mapel_Tanggal
-            const docId = `${currentUserData.kelas}_${mapelName}_${dateStr}`;
+            // FIX: Trim Mapel dan Kelas untuk keamanan
+            const safeMapel = mapelName.trim();
+            const safeKelas = currentUserData.kelas.trim();
+            const docId = `${safeKelas}_${safeMapel}_${dateStr}`;
             
-            // Cek dokumen dulu untuk validasi Token
-            // Catatan: Karena kita tidak menyimpan token di DB secara eksplisit untuk validasi di client side tanpa read,
-            // kita asumsikan jika write berhasil, maka token yang diinput akan dicek oleh guru nanti. 
-            // ATAU kita bisa read dulu untuk validasi strict. Di sini kita langsung write untuk performa.
-            
+            // LOG DEBUG (Bisa dilihat di Console Laptop dengan F12)
+            console.log("Mencoba Absen ke ID:", docId);
+
             const docRef = doc(db, 'presensi', docId);
             const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
@@ -479,23 +475,19 @@
                 // Merge: true agar tidak menimpa data siswa lain
                 await setDoc(docRef, updateData, { merge: true });
                 
-                alert(`✅ Presensi ${mapelName} Berhasil!`);
-                updateStatusUI('Hadir', timeStr, 'bg-gradient-to-r from-emerald-600 to-teal-600', mapelName);
+                alert(`✅ Presensi BERHASIL!\nMapel: ${safeMapel}\nWaktu: ${timeStr}`);
+                updateStatusUI('Hadir', timeStr, 'bg-gradient-to-r from-emerald-600 to-teal-600', safeMapel);
                 
                 if(method === 'qr') window.closeScanner();
                 
             } catch (e) {
-                alert("Gagal memproses presensi: " + e.message);
+                alert("Gagal memproses presensi ke server: " + e.message);
                 if(method === 'qr') html5QrCode.resume();
             }
         }
 
-        // --- PERMISSION LOGIC (Slightly adjusted, currently general permission) ---
+        // --- PERMISSION LOGIC ---
         window.submitPermission = async () => {
-            // Catatan: Izin ini masih bersifat 'umum' per hari, bukan per mapel. 
-            // Tapi kita akan simpan di dokumen 'presensi umum' atau kita perlu strategi lain.
-            // Untuk saat ini, izin disimpan di koleksi 'bukti_izin' saja sudah cukup untuk dilihat guru.
-            
             const type = document.querySelector('input[name="perm-type"]:checked').value;
             const reason = document.getElementById('perm-reason').value.trim();
             const fileInput = document.getElementById('perm-file');
@@ -510,8 +502,7 @@
                 let base64Image = "";
                 if(fileInput.files.length > 0) base64Image = await compressImage(fileInput.files[0]);
 
-                const today = getTodayString();
-                // ID Bukti: Siswa_Tanggal (Satu bukti per hari, bisa dilihat semua guru)
+                const today = getIndoDateString();
                 const proofId = `${currentUserData.id}_${today}`;
                 
                 await setDoc(doc(db, 'bukti_izin', proofId), {
@@ -523,10 +514,6 @@
                     alasan: reason,
                     foto: base64Image
                 });
-
-                // KITA TIDAK BISA UPDATE PRESENSI OTOMATIS KE SEMUA MAPEL
-                // Karena kita tidak tahu mapel apa saja hari ini.
-                // Guru akan melihat notifikasi bukti izin di panel mereka dan menandai manual (S/I).
 
                 alert("Bukti Izin Terkirim. Guru Mapel akan memverifikasi.");
                 window.switchPage('home');
@@ -556,17 +543,14 @@
             });
         }
 
-        // --- NAVIGATION & UJIAN ---
         window.switchPage = (pageId) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + pageId).classList.add('active');
-            
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             const navBtns = document.querySelectorAll('.nav-item');
             if(pageId === 'home') navBtns[0].classList.add('active');
             else if(pageId === 'profile') navBtns[1].classList.add('active');
         };
-
     </script>
 </body>
 </html>
