@@ -222,15 +222,15 @@
             </div>
             
             <div class="space-y-3">
-                <!-- Input Mapel Manual (FIX: UPPERCASE ENFORCEMENT) -->
-                <input type="text" id="manual-mapel-input" class="w-full p-3 text-center text-sm font-bold bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 outline-none transition-all placeholder-gray-400 uppercase" placeholder="NAMA MAPEL (HURUF KAPITAL)">
+                <!-- Input Mapel Manual (AUTO TITLE CASE) -->
+                <input type="text" id="manual-mapel-input" class="w-full p-3 text-center text-sm font-bold bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 outline-none transition-all placeholder-gray-400" placeholder="Nama Mapel (Otomatis)">
                 
                 <!-- Input Token -->
                 <input type="text" id="manual-token-input" class="w-full p-4 text-center text-2xl font-mono font-bold tracking-[0.5em] bg-gray-100 dark:bg-gray-800 rounded-xl border border-transparent focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-900 outline-none transition-all uppercase" maxlength="4" placeholder="----">
             </div>
 
             <button onclick="submitManualToken()" class="w-full mt-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg">Verifikasi</button>
-            <p class="text-[10px] text-gray-400 text-center mt-3">*Pastikan Nama Mapel SAMA PERSIS dengan Guru.</p>
+            <p class="text-[10px] text-gray-400 text-center mt-3">*Nama Mapel akan otomatis disesuaikan.</p>
         </div>
     </div>
 
@@ -254,6 +254,13 @@
         
         let html5QrCode;
         let currentUserData = null;
+
+        // --- TITLE CASE HELPER ---
+        function toTitleCase(str) {
+            return str.replace(/\w\S*/g, function(txt){
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             await signInAnonymously(auth);
@@ -412,6 +419,7 @@
                 if (!data.m) throw new Error("QR Tidak Valid: Data Mapel tidak ditemukan. Pastikan Guru menggunakan aplikasi terbaru.");
                 if (!data.d) throw new Error("QR Tidak Valid: Tanggal tidak ditemukan.");
 
+                // Mapel from QR is assumed to be correct (Title Case or whatever teacher uses)
                 await processAttendance(data.t, 'qr', data.m, data.d);
             } catch (e) {
                 alert("Gagal: " + e.message);
@@ -437,8 +445,9 @@
 
         window.submitManualToken = async () => {
             const token = document.getElementById('manual-token-input').value.toUpperCase();
-            // FIX: Enforce Uppercase to match Admin/Teacher standards
-            const mapel = document.getElementById('manual-mapel-input').value.trim().toUpperCase();
+            // FIX: Enforce Title Case automatically
+            let mapel = document.getElementById('manual-mapel-input').value.trim();
+            mapel = toTitleCase(mapel);
 
             if (!mapel) return alert("Masukkan Nama Mapel!");
             if (token.length < 4) return alert("Token minimal 4 karakter");
