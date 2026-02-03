@@ -136,6 +136,13 @@
             </div>
 
              <div class="space-y-5 bg-white dark:bg-cyber-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-emerald-900">
+                <!-- NEW FIELD: MAPEL (MANDATORY FOR SYNC) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mata Pelajaran</label>
+                    <input type="text" id="perm-mapel" class="w-full p-4 bg-gray-50 dark:bg-cyber-900 border border-gray-200 dark:border-emerald-800 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:text-white" placeholder="Contoh: Matematika, Bahasa Inggris...">
+                    <p class="text-[10px] text-orange-500 mt-1">*Wajib diisi agar masuk ke absen Guru Mapel</p>
+                </div>
+
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Jenis Keterangan</label>
                     <div class="grid grid-cols-2 gap-4">
@@ -495,14 +502,19 @@
             }
         }
 
-        // --- PERMISSION LOGIC ---
+        // --- PERMISSION LOGIC (REVISED FOR SYNC) ---
         window.submitPermission = async () => {
             const type = document.querySelector('input[name="perm-type"]:checked').value;
             const reason = document.getElementById('perm-reason').value.trim();
+            // BARU: Ambil Mapel dari input
+            let mapel = document.getElementById('perm-mapel').value.trim();
             const fileInput = document.getElementById('perm-file');
             
+            if(!mapel) { alert("Harap isi Nama Mata Pelajaran!"); return; }
             if(!reason) { alert("Isi alasan!"); return; }
             
+            mapel = toTitleCase(mapel); // Pastikan format mapel seragam
+
             const btn = document.getElementById('btn-perm-top');
             const originalText = btn.innerHTML;
             btn.disabled = true; btn.innerText = "Mengirim...";
@@ -512,9 +524,12 @@
                 if(fileInput.files.length > 0) base64Image = await compressImage(fileInput.files[0]);
 
                 const today = getIndoDateString();
+                const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+                // 1. UPLOAD BUKTI (Supaya Guru bisa lihat fotonya)
                 const proofId = `${currentUserData.id}_${today}`;
-                
-                await setDoc(doc(db, 'bukti_izin', proofId), {
+                const proofRef = doc(db, 'bukti_izin', proofId);
+                await setDoc(proofRef, {
                     nama: currentUserData.nama,
                     nis: currentUserData.id,
                     kelas: currentUserData.kelas,
@@ -524,11 +539,37 @@
                     foto: base64Image
                 });
 
-                alert("Bukti Izin Terkirim. Guru Mapel akan memverifikasi.");
+                // 2. UPDATE ABSEN GURU (Supaya status berubah jadi S/I di tabel Guru)
+                const safeKelas = currentUserData.kelas.trim();
+                const docId = `${safeKelas}_${mapel}_${today}`;
+                const presensiRef = doc(db, 'presensi', docId);
+
+                const updateData = {};
+                updateData[currentUserData.id] = {
+                    status: type,       // 's' atau 'i'
+                    time: timeStr,      // Jam kirim
+                    method: 'permit',   // Metode izin
+                    buktiAda: true,     // Trigger tombol "Lihat Bukti" di Guru
+                    timestamp: serverTimestamp()
+                };
+
+                // Kita gunakan setDoc dengan merge untuk memastikan dokumen dibuat jika belum ada
+                // Penting: Sertakan field mapel di root dokumen agar Guru bisa load report nanti
+                await setDoc(presensiRef, { mapel: mapel }, { merge: true });
+                await setDoc(presensiRef, updateData, { merge: true });
+
+                const statusText = type === 's' ? 'Sakit' : 'Izin';
+                alert(`Izin ${statusText} Terkirim untuk mapel ${mapel}.`);
+                
+                // Update UI Home
+                updateStatusUI(statusText, timeStr, 'bg-gradient-to-r from-blue-500 to-indigo-600', mapel);
                 window.switchPage('home');
 
-            } catch(e) { alert("Gagal: " + e.message); } 
-            finally { btn.disabled = false; btn.innerHTML = originalText; }
+            } catch(e) { 
+                alert("Gagal: " + e.message); 
+            } finally { 
+                btn.disabled = false; btn.innerHTML = originalText; 
+            }
         };
 
         function compressImage(file) {
